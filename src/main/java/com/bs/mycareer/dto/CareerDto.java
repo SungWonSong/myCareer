@@ -4,6 +4,8 @@ import lombok.Getter;
 
 @Getter
 public class CareerDto {
+
+    private Long id;
     private String title;
     private String contents;
 }
