@@ -3,12 +3,18 @@ package com.bs.mycareer.entity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.springframework.data.annotation.Id;
+import lombok.ToString;
 
 // domain이라고 하며 도메인 객체(Entity)
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
+@ToString
 public class Career {
 
     @Id
@@ -19,8 +25,9 @@ public class Career {
 
     private String contents;
 
+    public Long getId() { return id; }
 
-
+    public void setId(Long id) { this.id = id; }
     public String getTitle() {
         return title;
     }
