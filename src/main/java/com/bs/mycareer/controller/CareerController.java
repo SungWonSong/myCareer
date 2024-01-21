@@ -20,7 +20,7 @@ public class CareerController {
     private final CareerService careerService;
     private final CareerContentRepository careerContentRepository;
 
-    //Carreer를 List<Carrer>에 추가한다.
+    //Career를 List<Career>에 추가한다.
     @PostMapping("/career")
         public List<Career> postCareers() {
             List<Career> careers = new ArrayList<>();
