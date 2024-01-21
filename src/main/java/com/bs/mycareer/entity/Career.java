@@ -18,7 +18,7 @@ import lombok.ToString;
 public class Career {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.AUTO) // id값 auto 자동할당
     private Long id;
 
     private String title;
