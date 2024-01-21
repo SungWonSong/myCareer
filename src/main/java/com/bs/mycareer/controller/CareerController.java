@@ -28,7 +28,7 @@ public class CareerController {
             return careers;
 
         }
-    }
+
 
     //전체 조회
     @GetMapping("/careerContents")
