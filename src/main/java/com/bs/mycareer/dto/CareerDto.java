@@ -7,7 +7,7 @@ import lombok.Setter;
 @Setter
 public class CareerDto {
 
-    private Long id;
+//    private Long id; 보안상의 이유로 식별자는 전달하지 않는다.
     private String title;
     private String contents;
 }
