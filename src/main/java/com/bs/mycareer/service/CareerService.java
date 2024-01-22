@@ -17,12 +17,12 @@ import java.util.Optional;
 public class CareerService {
 
     private final CareerContentRepository CareerContentRepository;
-    @Transactional
-    public Career createCareer(){
-        Career career = new Career();
-        CareerContentRepository.ContentSave(career);
-        return career;
-    }
+//    @Transactional
+//    public Career createCareer(){
+//        Career career = new Career();
+//        CareerContentRepository.ContentSave(career);
+//        return career; }
+
 
     //전체 글 조회
     @Transactional

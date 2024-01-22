@@ -1,8 +1,11 @@
 package com.bs.mycareer.repository;
 
-import com.bs.mycareer.entity.Career;
+import com.bs.mycareer.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserRepository extends JpaRepository<Career, Long> {
+import java.util.Optional;
+
+public interface UserRepository extends JpaRepository<User, Integer> {
+    Optional<User> findByEmail(String email);
 
 }
