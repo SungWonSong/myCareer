@@ -12,7 +12,7 @@ import java.util.Optional;
 
 //Jpa를 상속하면 ContentSave는 Career save하는 함수를 자동으로 할당해준다...(개사기네)
 @Repository
-public interface CareerContentRepository extends JpaRepository<Career, Long> {
+public interface CareerContentRepository extends JpaRepository<Career, Integer> {
     Career updateCareer(Long id, CareerDto careerDto);
     Career save(Career career);
 
