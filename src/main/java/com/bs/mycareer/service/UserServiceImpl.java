@@ -7,6 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
+
 @Service
 public class UserServiceImpl implements UserService{
 
@@ -27,7 +29,7 @@ public class UserServiceImpl implements UserService{
 
         // 이부분 의논 필요... -> 무슨 오류가 있을경우 던지게 해야되기 때문임(존재한다면 예외처리)
         if(userRepository.findByEmail(email).isPresent()){
-            throw new RuntimeException("Email is already registered");
+            throw new RuntimeException("등록된 이메일입니다.");
         }
 
         User user = new User();
@@ -36,6 +38,7 @@ public class UserServiceImpl implements UserService{
         //user.setId(id);  -> Id의 값은 Generated value에 의해 지정해줄 필요 없다(수동으로 x)
         user.setEmail(email);
         user.setPassword(bCryptPasswordEncoder.encode(encodedPassword));
+        user.setRole("ROLE_USER");
 
         userRepository.save(user);
 

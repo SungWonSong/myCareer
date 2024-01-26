@@ -19,6 +19,7 @@ public class UserController {
     }
 
     //@RequestParam은 메소드 사용과 매개변수랑 의존관계형성 즉 매핑해주는 것이다.
+    // return "login"은 추후 수정 -> login.index 페이지로 리다이렉팅 시도
     @PostMapping("/register")
     public String registerProcess(@RequestParam UserRegisterDto userRegisterDto){
         userServiceimpl.registerProcess(userRegisterDto);
