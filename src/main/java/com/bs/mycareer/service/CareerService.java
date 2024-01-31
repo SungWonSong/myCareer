@@ -10,9 +10,11 @@ public interface CareerService {
 
     Career createCareer(CareerDto careerDto);
 
-    Optional<Career> getCareerById(Long id);
+    CareerDto getCareerById(Long id);
 
-    List<Career> getAllCareers();
+    List<CareerDto> getAllCareers();
+
+
 
     Career updateCareer(Long id, CareerDto careerDto);
 

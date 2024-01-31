@@ -16,8 +16,8 @@ import org.hibernate.annotations.Type;
 public class Career {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // id값 auto 자동할당
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // id값 auto 자동할당
+    private Long id;
 
     private String title;
 
