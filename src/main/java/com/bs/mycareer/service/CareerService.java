@@ -14,7 +14,7 @@ public interface CareerService {
 
     List<Career> getAllCareers();
 
-    Career updateCareer(Long id, CareerDto careerDto);
+//    Career updateCareer(Long id, CareerDto careerDto);
 
     void deleteCareer(Long id);
 }

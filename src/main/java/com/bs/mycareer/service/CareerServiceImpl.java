@@ -3,7 +3,6 @@ package com.bs.mycareer.service;
 import com.bs.mycareer.dto.CareerDto;
 import com.bs.mycareer.entity.Career;
 import com.bs.mycareer.repository.CareerContentRepository;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,17 +38,17 @@ public class CareerServiceImpl implements CareerService {
         return careerContentRepository.findAll();
     }
 
-    @Override
-    public Career updateCareer(Long id, CareerDto careerDto) {
-        Optional<Career> optionalCareer = careerContentRepository.findById(id);
-        if (optionalCareer.isPresent()) {
-            Career career = optionalCareer.get();
-            career.setTitle(careerDto.getTitle());
-            career.setContents(careerDto.getContents());
-            return careerContentRepository.save(career);
-        }
-        return null; //예외 처리 방법 논의ㄱㄱ
-    }
+//    @Override
+//    public Career updateCareer(Long id, CareerDto careerDto) {
+//        Optional<Career> optionalCareer = careerContentRepository.findById(id);
+//        if (optionalCareer.isPresent()) {
+//            Career career = optionalCareer.get();
+//            career.setTitle(careerDto.getTitle());
+//            career.setContents(careerDto.getContents());
+//            return careerContentRepository.save(career);
+//        }
+//        return null; //예외 처리 방법 논의ㄱㄱ
+//    }
 
     //커리어 삭제
     @Override

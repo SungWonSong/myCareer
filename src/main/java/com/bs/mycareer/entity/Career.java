@@ -5,7 +5,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
-import org.hibernate.annotations.Type;
 
 // domain이라고 하며 도메인 객체(Entity)
 @Entity
@@ -16,8 +15,8 @@ import org.hibernate.annotations.Type;
 public class Career {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO) // id값 auto 자동할당
-    private int id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // id값 auto 자동할당
+    private Long id;
 
     private String title;
 
