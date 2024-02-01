@@ -1,21 +1,18 @@
 package com.bs.mycareer.service;
 
-import com.bs.mycareer.dto.CommonUserDetailDto;
-import com.bs.mycareer.entity.User;
+import com.bs.mycareer.dto.BSUserDetail;
 import com.bs.mycareer.repository.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-public class CommonUserDetailsService implements UserDetailsService {
+public class BSUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
 
-    public CommonUserDetailsService(UserRepository userRepository) {
+    public BSUserDetailsService(UserRepository userRepository) {
 
         this.userRepository = userRepository;
     }
@@ -26,8 +23,8 @@ public class CommonUserDetailsService implements UserDetailsService {
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
         return userRepository.findByEmail(email)
-                .map(CommonUserDetailDto::new)
-                .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + email));
+                .map(BSUserDetail::new)
+                .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 이메일입니다"));
     }
 
 }

@@ -3,10 +3,10 @@ package com.bs.mycareer.service;
 import com.bs.mycareer.dto.CareerDto;
 import com.bs.mycareer.entity.Career;
 import com.bs.mycareer.repository.CareerContentRepository;
+
 import org.springframework.transaction.annotation.Transactional;
-import lombok.AllArgsConstructor;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -51,6 +51,7 @@ public class CareerServiceImpl implements CareerService {
         }
         return careerDtoList;
     }
+
 
     //커리어 수정
     @Override
