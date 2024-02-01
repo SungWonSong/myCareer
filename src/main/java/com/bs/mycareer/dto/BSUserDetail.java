@@ -3,12 +3,13 @@ package com.bs.mycareer.dto;
 import com.bs.mycareer.entity.User;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-
-public class CommonUserDetailDto implements UserDetails {
+@Component
+public class BSUserDetail implements UserDetails {
 
     private final User user;
 
@@ -17,25 +18,19 @@ public class CommonUserDetailDto implements UserDetails {
     //추가로 admin / user 추후에 나누어 적용
 
 
-    public CommonUserDetailDto(User user) {
+    public BSUserDetail(User user) {
 
         this.user = user;
     }
 
-    // Collection 안에 ?는 권한이 어떤 타입인줄 모르기에 사용
+    // Collection 안에 ?는 권한이 어떤 타입인줄 모르기에 사용 / 추후 이로직 안에 irator.next()함수를 써서 리스트에서 다음거로 넘어가는 로직 생성하기
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
 
         Collection<GrantedAuthority> collection = new ArrayList<>();
 
-        collection.add(new GrantedAuthority() {
+        collection.add((GrantedAuthority) user::getRole);
 
-            @Override
-            public String getAuthority() {
-
-                return user.getRole();
-            }
-        });
 
         return collection;
     }
@@ -59,17 +54,17 @@ public class CommonUserDetailDto implements UserDetails {
 
         @Override
         public boolean isAccountNonLocked () {
-            return false;
+        return false;
         }
 
         @Override
         public boolean isCredentialsNonExpired () {
-            return false;
+        return false;
         }
 
         @Override
         public boolean isEnabled () {
-            return false;
+        return false;
         }
     }
 
