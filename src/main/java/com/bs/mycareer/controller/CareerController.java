@@ -36,15 +36,17 @@ public class CareerController {
 
 
     //전체 조회
+
     @GetMapping("user/career/ContentLists")
-    public List<Career> getAllCareers() {
+    public List<CareerDto> getAllCareers() {
         return careerService.getAllCareers();
     }
 
     //id별 조회
+
     @GetMapping("user/career/{id}")
-    public Career getCareerById(@PathVariable Long id) {
-        return careerService.getCareerById(id).orElse(null); // 존재하지 않을 경우 null 반환, 혹은 예외 처리 가능
+    public CareerDto getCareerById(@PathVariable Long id) {
+        return careerService.getCareerById(id); // 존재하지 않을 경우 null 반환, 혹은 예외 처리 가능
     }
 
     //글 수정
