@@ -1,9 +1,5 @@
-package com.bs.mycareer.controller;
+package com.bs.mycareer.Career;
 
-import com.bs.mycareer.dto.CareerDto;
-import com.bs.mycareer.entity.Career;
-import com.bs.mycareer.repository.CareerContentRepository;
-import com.bs.mycareer.service.CareerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -29,22 +25,22 @@ public class CareerController {
 //
 //        }
     //커리어 작성
-    @PostMapping("user/career/save")
-    public Career createCareer(@RequestBody CareerDto careerDto) {
-        return careerService.createCareer(careerDto);
+    @PostMapping("user/career/create")
+    public Career createCareer(@RequestBody CareerDto careerDto, Long user_id) {
+        return careerService.createCareer(careerDto,user_id);
     }
 
 
     //전체 조회
 
-    @GetMapping("user/career/ContentLists")
+    @GetMapping("career/ContentLists")
     public List<CareerDto> getAllCareers() {
         return careerService.getAllCareers();
     }
 
     //id별 조회
 
-    @GetMapping("user/career/{id}")
+    @GetMapping("career/{id}")
     public CareerDto getCareerById(@PathVariable Long id) {
         return careerService.getCareerById(id); // 존재하지 않을 경우 null 반환, 혹은 예외 처리 가능
     }
@@ -52,10 +48,10 @@ public class CareerController {
     //글 수정
 //    @PutMapping("/career/{id}")
 //    public Career updateCareer(@PathVariable Long id, @RequestBody CareerDto careerDto) {
-//        return careerService.updateCareer(id, careerDto);
+//        return careerService.(id, careerDto);
 //    }
 
-    @DeleteMapping("user/career/{id}")
+    @DeleteMapping("career/{id}")
     public void deleteCareer(@PathVariable Long id) {
         careerService.deleteCareer(id);
     }

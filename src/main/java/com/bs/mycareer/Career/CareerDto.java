@@ -1,6 +1,5 @@
-package com.bs.mycareer.dto;
+package com.bs.mycareer.Career;
 
-import com.bs.mycareer.entity.Career;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -9,7 +8,9 @@ import lombok.Setter;
 public class CareerDto {
 
 //    private Long id; 보안상의 이유로 식별자는 전달하지 않는다.
+
     private String title;
+
     private String contents;
 
     //오버로딩 - 생성자 여러개 만들기 가능한거

@@ -1,21 +1,23 @@
 package com.bs.mycareer.service;
+
+import com.bs.mycareer.Career.Career;
+import com.bs.mycareer.Career.CareerContentRepository;
+import com.bs.mycareer.Career.CareerDto;
+import com.bs.mycareer.Career.CareerServiceImpl;
+import com.bs.mycareer.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.bs.mycareer.dto.CareerDto;
-import com.bs.mycareer.entity.Career;
-import com.bs.mycareer.repository.CareerContentRepository;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 class CareerServiceImplTest {
@@ -27,6 +29,9 @@ class CareerServiceImplTest {
     @Autowired
     private CareerServiceImpl careerService;
 
+    @Autowired
+    private UserRepository userRepository;
+
 
 
     @Test
@@ -34,15 +39,19 @@ class CareerServiceImplTest {
     public void createCareerTest() throws Exception {
         //given
         CareerDto careerDto = new CareerDto("김보아 이력서", "자기소개서입니다~~");
+        Long userId = 1L;
 
         //when
-        Career career = careerService.createCareer(careerDto);
+        Career career = careerService.createCareer(careerDto,userId);
         //then
-        assertEquals(careerDto.getTitle(), career.getTitle());
-        assertEquals(careerDto.getContents(), career.getContents());
+        assertEquals(career.getUser().getUser_id(), userId);
+        assertEquals(career.getTitle(),careerDto.getTitle());
+        assertEquals(career.getContents(),careerDto.getContents());
         // 로그 출력
+        logger.info("career.getUser() = {}", career.getUser());
         logger.info("career.getTitle() = {}", career.getTitle());
         logger.info("career.getContents() = {}", career.getContents());
+
     }
 
     @Test
