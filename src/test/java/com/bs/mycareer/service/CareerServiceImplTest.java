@@ -4,6 +4,8 @@ import com.bs.mycareer.Career.Career;
 import com.bs.mycareer.Career.CareerContentRepository;
 import com.bs.mycareer.Career.CareerDto;
 import com.bs.mycareer.Career.CareerServiceImpl;
+import com.bs.mycareer.dto.BSUserDetail;
+import com.bs.mycareer.entity.User;
 import com.bs.mycareer.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +14,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import java.util.List;
 
@@ -36,15 +40,20 @@ class CareerServiceImplTest {
 
     @Test
     @DisplayName("커리어 작성하기")
+    @Transactional
     public void createCareerTest() throws Exception {
         //given
         CareerDto careerDto = new CareerDto("김보아 이력서", "자기소개서입니다~~");
-        Long userId = 1L;
+        User user = new User("보아","bs34@naver.com","USER");
+        BSUserDetail bsUserDetail = new BSUserDetail(user);
+
+        // SecurityContextHolder에 UserDetails 설정
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bsUserDetail, null, bsUserDetail.getAuthorities()));
 
         //when
-        Career career = careerService.createCareer(careerDto,userId);
+        Career career = careerService.createCareer(careerDto);
         //then
-        assertEquals(career.getUser().getUser_id(), userId);
+        assertEquals(career.getUser().getUser_id(), bsUserDetail.getUser().getUser_id());
         assertEquals(career.getTitle(),careerDto.getTitle());
         assertEquals(career.getContents(),careerDto.getContents());
         // 로그 출력

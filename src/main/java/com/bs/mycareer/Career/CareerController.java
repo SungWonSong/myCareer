@@ -27,7 +27,7 @@ public class CareerController {
     //커리어 작성
     @PostMapping("user/career/create")
     public Career createCareer(@RequestBody CareerDto careerDto, Long user_id) {
-        return careerService.createCareer(careerDto,user_id);
+        return careerService.createCareer(careerDto);
     }
 
 
