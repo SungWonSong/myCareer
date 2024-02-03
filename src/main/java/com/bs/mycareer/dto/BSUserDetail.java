@@ -1,6 +1,9 @@
 package com.bs.mycareer.dto;
 
 import com.bs.mycareer.entity.User;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -9,10 +12,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 @Component
+@Getter
+@Setter
+@NoArgsConstructor
 public class BSUserDetail implements UserDetails {
 
-    private final User user;
 
+    private User user;
 
     //일반적으로 security는 권한을 요구하는게 필수라 구현해야되지만 필요없다면 밑에 코드사용
     //추가로 admin / user 추후에 나누어 적용
