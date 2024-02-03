@@ -23,6 +23,10 @@ public class BSUserDetail implements UserDetails {
         this.user = user;
     }
 
+    public User getUser() {
+        return user;
+    }
+
     // Collection 안에 ?는 권한이 어떤 타입인줄 모르기에 사용 / 추후 이로직 안에 irator.next()함수를 써서 리스트에서 다음거로 넘어가는 로직 생성하기
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -66,5 +70,7 @@ public class BSUserDetail implements UserDetails {
         public boolean isEnabled () {
         return false;
         }
-    }
+
+
+}
 

@@ -1,6 +1,5 @@
-package com.bs.mycareer.repository;
+package com.bs.mycareer.Career;
 
-import com.bs.mycareer.entity.Career;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -11,11 +10,8 @@ import java.util.Optional;
 @Repository
 
 public interface CareerContentRepository extends JpaRepository<Career, Integer> {
-//  Career save(Career career);
-//
+
     void deleteById(Long id);
-
-
     List<Career> findAll(); //글 조회
     Optional<Career> findCareerById(Long id); //id 별 글 조회
 

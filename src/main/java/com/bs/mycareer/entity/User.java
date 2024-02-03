@@ -1,5 +1,6 @@
 package com.bs.mycareer.entity;
 
+import com.bs.mycareer.Career.Career;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -16,6 +17,9 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Career> careers = new ArrayList<>();
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long user_id;
@@ -26,8 +30,7 @@ public class User {
 
     private String role;
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
-    private List<Career> careers = new ArrayList<>();
+
 
     //init할때 필요... 회원가입일경우엔 role -> "USER"를 넣어서 회원가입, 하지만 초기화할때에는 role값에 넣어주는게 없기에 밑의 함수로 role값 -> "USER" 생성
     public User(String email, String password, String role) {
