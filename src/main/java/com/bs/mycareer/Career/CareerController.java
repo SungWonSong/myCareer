@@ -2,8 +2,11 @@ package com.bs.mycareer.Career;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 // 말 그대로 controller
@@ -45,11 +48,18 @@ public class CareerController {
         return careerService.getCareerById(id); // 존재하지 않을 경우 null 반환, 혹은 예외 처리 가능
     }
 
-    //글 수정
-//    @PutMapping("/career/{id}")
-//    public Career updateCareer(@PathVariable Long id, @RequestBody CareerDto careerDto) {
-//        return careerService.(id, careerDto);
-//    }
+
+    @PutMapping("/career/{id}")
+    public ResponseEntity<Career> updateCareer(@PathVariable Long id, @RequestBody CareerDto careerDto) {
+        try {
+            Career updatedCareer = careerService.updateCareer(id, careerDto);
+            return ResponseEntity.ok(updatedCareer);
+        } catch (AccessDeniedException e) {
+            // AccessDeniedException에 대한 처리 로직
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+        }
+    }
+
 
     @DeleteMapping("career/{id}")
     public void deleteCareer(@PathVariable Long id) {
