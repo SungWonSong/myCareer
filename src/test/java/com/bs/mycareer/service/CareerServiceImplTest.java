@@ -1,5 +1,10 @@
 package com.bs.mycareer.service;
+import com.bs.mycareer.dto.BSUserDetail;
+import com.bs.mycareer.dto.UserRegisterDto;
+import com.bs.mycareer.entity.User;
+import com.bs.mycareer.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,12 +15,15 @@ import com.bs.mycareer.repository.CareerContentRepository;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class CareerServiceImplTest {
@@ -27,22 +35,36 @@ class CareerServiceImplTest {
     @Autowired
     private CareerServiceImpl careerService;
 
+    @Autowired
+    private UserRepository userRepository;
 
+    @BeforeEach
+    public void setUp() {
+        SecurityContextHolder.clearContext();
+    }
 
     @Test
     @DisplayName("커리어 작성하기")
     public void createCareerTest() throws Exception {
         //given
-        CareerDto careerDto = new CareerDto("김보아 이력서", "자기소개서입니다~~");
+        CareerDto careerDto = new CareerDto("김보아 이력서", "자기소개서입니다~~",true);
+        User user = new User("보아","bs34@naver.com","USER");
+        BSUserDetail bsUserDetail = new BSUserDetail(user);
+
+        // SecurityContextHolder에 UserDetails 설정
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bsUserDetail, null, bsUserDetail.getAuthorities()));
 
         //when
         Career career = careerService.createCareer(careerDto);
         //then
         assertEquals(careerDto.getTitle(), career.getTitle());
         assertEquals(careerDto.getContents(), career.getContents());
+        assertEquals(career.getUser().getUser_id(), bsUserDetail.getUser().getUser_id());
         // 로그 출력
         logger.info("career.getTitle() = {}", career.getTitle());
         logger.info("career.getContents() = {}", career.getContents());
+        logger.info("career.getUser() = {}", career.getUser());
+
     }
 
     @Test
@@ -63,7 +85,7 @@ class CareerServiceImplTest {
 
         //then
         //isEqualToComparingFieldByField는 두 객체를 필드별로 비교하는 메서드!
-        assertThat(careerDto).isEqualToComparingFieldByField(new CareerDto("보아 이력서!!", "저는 열심히 할수있습니다."));
+        assertThat(careerDto).isEqualToComparingFieldByField(new CareerDto("보아 이력서!!", "저는 열심히 할수있습니다.",true));
         logger.info("careerDto.getTitle() = {}", careerDto.getTitle());
         logger.info("careerDto.getContents() = {}", careerDto.getContents());
     }
@@ -104,5 +126,46 @@ class CareerServiceImplTest {
         assertEquals(2, careerDtoList.size());
 
     }
+
+    @Test
+    @DisplayName("작성자가 커리어 삭제")
+    public void deleteCareerByAuthor() throws Exception {
+        //given
+        CareerDto careerDto = new CareerDto("김보아 이력서", "자기소개서입니다~~",true);
+        User user = new User("보아","bs34@naver.com","USER");
+        BSUserDetail bsUserDetail = new BSUserDetail(user);
+
+        // SecurityContextHolder에 UserDetails 설정
+        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bsUserDetail, null, bsUserDetail.getAuthorities()));
+
+        Career career = careerService.createCareer(careerDto);
+
+        user.addCareer(career);
+
+        Long careerId = career.getId();
+
+        //when
+        careerService.deleteCareer(careerId);
+
+        userRepository.save(user);
+
+        //then
+        Career deletedCareer = careerContentRepository.findCareerById(careerId).orElse(null);
+        assertNotNull(deletedCareer);
+        assertFalse(deletedCareer.isAvailable());
+    }
+
+//    @Test
+//    @DisplayName("관리자가 커리어 삭제")
+//    public void deleteCareerByAdmin() throws Exception {
+//        //given
+//
+//        //when
+//
+//        //then
+//
+//    }
+
+
 
 }

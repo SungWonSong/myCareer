@@ -32,13 +32,15 @@ public class UserServiceImpl implements UserService{
             throw new RuntimeException("등록된 이메일입니다.");
         }
 
-        User user = new User();
+
         String encodedPassword = bCryptPasswordEncoder.encode(password);
+        User user = new User(email,encodedPassword,"USER");
 
         //user.setId(id);  -> Id의 값은 Generated value에 의해 지정해줄 필요 없다(수동으로 x)
-        user.setEmail(email);
-        user.setPassword(bCryptPasswordEncoder.encode(encodedPassword));
-        user.setRole("ROLE_USER");
+//        user.setEmail(email);
+//        user.setPassword(bCryptPasswordEncoder.encode(encodedPassword));
+//        user.setRole("ROLE_USER");
+
 
         userRepository.save(user);
 

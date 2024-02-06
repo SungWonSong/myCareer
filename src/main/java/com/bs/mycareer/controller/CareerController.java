@@ -2,6 +2,7 @@ package com.bs.mycareer.controller;
 
 import com.bs.mycareer.dto.CareerDto;
 import com.bs.mycareer.entity.Career;
+import com.bs.mycareer.entity.User;
 import com.bs.mycareer.repository.CareerContentRepository;
 import com.bs.mycareer.service.CareerService;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +30,10 @@ public class CareerController {
 //
 //        }
     //커리어 작성
-    @PostMapping("/career/save")
-    public Career createCareer(@RequestBody CareerDto careerDto) {
-        return careerService.createCareer(careerDto);
-    }
+//    @PostMapping("/career/save")
+//    public Career createCareer(@RequestBody CareerDto careerDto User user) {
+//        return careerService.createCareer(careerDto);
+//    }
 
 
     //전체 조회
@@ -53,10 +54,10 @@ public class CareerController {
         return careerService.updateCareer(id, careerDto);
     }
 
-    @DeleteMapping("/career/{id}")
-    public void deleteCareer(@PathVariable Long id) {
-        careerService.deleteCareer(id);
-    }
+//    @DeleteMapping("/career/{id}")
+//    public void deleteCareer(@PathVariable Long id) {
+//        careerService.deleteCareer();
+//    }
 
 
 }
