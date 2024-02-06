@@ -1,5 +1,6 @@
 package com.bs.mycareer.Career;
 
+import java.nio.file.AccessDeniedException;
 import java.util.List;
 
 public interface CareerService {
@@ -12,6 +13,7 @@ public interface CareerService {
 
     List<CareerDto> getAllCareers();
 
+    Career updateCareer(Long id,CareerDto careerDto) throws AccessDeniedException;
 
     void deleteCareer(Long id);
 }

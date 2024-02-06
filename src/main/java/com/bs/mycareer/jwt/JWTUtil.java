@@ -6,9 +6,7 @@ import com.auth0.jwt.interfaces.DecodedJWT;
 import com.bs.mycareer.dto.AuthenticationResponse;
 import com.bs.mycareer.dto.BSUserDetail;
 import io.jsonwebtoken.Jwts;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 
 import java.util.Date;
 import java.util.Optional;
@@ -32,17 +30,17 @@ public class JWTUtil {
     //SecretKey라는 밑 코드를 통해 객체화 된 키를 사용(HS256는 대표적인 대칭 키 방식이며, 한 번 생성된 키를 애플리케이션 내에서만 사용) -> access refresh 나누기
 
 
-    public String resolveAccessToken(HttpServletRequest httpServletRequest) {
-        // Authorization 헤더에서 토큰을 추출
-        String authorizationHeader = httpServletRequest.getHeader("Authorization");
-
-        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
-            // "Bearer " 이후의 문자열이 토큰이므로 추출
-            return authorizationHeader.substring(7);
-        }
-
-        return null;
-    }
+//    public String resolveAccessToken(HttpServletRequest httpServletRequest) {
+//        // Authorization 헤더에서 토큰을 추출
+//        String authorizationHeader = httpServletRequest.getHeader("Authorization");
+//
+//        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
+//            // "Bearer " 이후의 문자열이 토큰이므로 추출
+//            return authorizationHeader.substring(7);
+//        }
+//
+//        return null;
+//    }
 
     // Access_token 생성 로직
     public String generateAccessToken(BSUserDetail bsUserDetail) {
