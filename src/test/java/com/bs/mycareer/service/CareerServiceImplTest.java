@@ -1,18 +1,18 @@
 package com.bs.mycareer.service;
+
+import com.bs.mycareer.Career.Career;
+import com.bs.mycareer.Career.CareerContentRepository;
+import com.bs.mycareer.Career.CareerDto;
+import com.bs.mycareer.Career.CareerServiceImpl;
 import com.bs.mycareer.dto.BSUserDetail;
-import com.bs.mycareer.dto.UserRegisterDto;
 import com.bs.mycareer.entity.User;
 import com.bs.mycareer.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.bs.mycareer.dto.CareerDto;
-import com.bs.mycareer.entity.Career;
-import com.bs.mycareer.repository.CareerContentRepository;
-import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -23,7 +23,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
 
 @SpringBootTest
 class CareerServiceImplTest {
@@ -38,6 +37,7 @@ class CareerServiceImplTest {
     @Autowired
     private UserRepository userRepository;
 
+
     @BeforeEach
     public void setUp() {
         SecurityContextHolder.clearContext();
@@ -45,6 +45,7 @@ class CareerServiceImplTest {
 
     @Test
     @DisplayName("커리어 작성하기")
+    @Transactional
     public void createCareerTest() throws Exception {
         //given
         CareerDto careerDto = new CareerDto("김보아 이력서", "자기소개서입니다~~",true);
@@ -60,10 +61,11 @@ class CareerServiceImplTest {
         assertEquals(careerDto.getTitle(), career.getTitle());
         assertEquals(careerDto.getContents(), career.getContents());
         assertEquals(career.getUser().getUser_id(), bsUserDetail.getUser().getUser_id());
+
         // 로그 출력
+        logger.info("career.getUser() = {}", career.getUser());
         logger.info("career.getTitle() = {}", career.getTitle());
         logger.info("career.getContents() = {}", career.getContents());
-        logger.info("career.getUser() = {}", career.getUser());
 
     }
 

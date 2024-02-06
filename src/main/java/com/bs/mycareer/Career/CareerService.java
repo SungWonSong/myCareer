@@ -1,24 +1,19 @@
-package com.bs.mycareer.service;
+package com.bs.mycareer.Career;
 
-import com.bs.mycareer.dto.CareerDto;
-import com.bs.mycareer.dto.UserRegisterDto;
-import com.bs.mycareer.entity.Career;
-import com.bs.mycareer.entity.User;
-
+import java.nio.file.AccessDeniedException;
 import java.util.List;
-import java.util.Optional;
 
 public interface CareerService {
 
+    //커리어 작성
     Career createCareer(CareerDto careerDto);
+
 
     CareerDto getCareerById(Long id);
 
     List<CareerDto> getAllCareers();
 
-
-
-    Career updateCareer(Long id, CareerDto careerDto);
+    Career updateCareer(Long id,CareerDto careerDto) throws AccessDeniedException;
 
 //    void deleteCareer(Long id);
 
