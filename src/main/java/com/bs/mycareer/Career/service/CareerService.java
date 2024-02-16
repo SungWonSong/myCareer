@@ -1,4 +1,7 @@
-package com.bs.mycareer.Career;
+package com.bs.mycareer.Career.service;
+
+import com.bs.mycareer.Career.entity.Career;
+import com.bs.mycareer.Career.dto.CareerDto;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;

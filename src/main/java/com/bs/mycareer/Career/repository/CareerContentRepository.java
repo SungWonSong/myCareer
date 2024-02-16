@@ -1,5 +1,6 @@
-package com.bs.mycareer.Career;
+package com.bs.mycareer.Career.repository;
 
+import com.bs.mycareer.Career.entity.Career;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
