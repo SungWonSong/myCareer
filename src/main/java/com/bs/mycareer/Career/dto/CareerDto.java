@@ -1,5 +1,6 @@
-package com.bs.mycareer.Career;
+package com.bs.mycareer.Career.dto;
 
+import com.bs.mycareer.Career.entity.Career;
 import lombok.Getter;
 import lombok.Setter;
 
