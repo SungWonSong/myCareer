@@ -22,6 +22,8 @@ public class JWTProperties {
     private final String accessTokenSubject = "ACCESS_TOKEN";
     private final Key accessSecretKey;
     private final Key refreshSecretKey;
+    private int accessTokenExpiredTime;
+    private int refreshTokenExpiredTime;
 
 
     public JWTProperties(@Value("${spring.jwt.accessSecret}") String accessSecret,
@@ -33,14 +35,12 @@ public class JWTProperties {
 
     public Algorithm getAccessSign() {
         // 시크릿 키를 이용하여 Algorithm 생성
-        return Algorithm.HMAC256(accessSecretKey.getEncoded());
+        return Algorithm.HMAC256(new String(accessSecretKey.getEncoded(), StandardCharsets.UTF_8));
     }
 
     public Algorithm getRefreshSign(){
-
-        return Algorithm.HMAC256(refreshSecretKey.getEncoded());
+        return Algorithm.HMAC256(new String(refreshSecretKey.getEncoded(), StandardCharsets.UTF_8));
     }
-
 
 
 }

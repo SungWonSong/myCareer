@@ -1,14 +1,15 @@
 package com.bs.mycareer.jwt;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.bs.mycareer.dto.AuthenticationRequest;
-import com.bs.mycareer.dto.AuthenticationResponse;
-import com.bs.mycareer.dto.BSUserDetail;
-import com.bs.mycareer.service.BSUserDetailsService;
+import com.bs.mycareer.User.dto.AuthenticationRequest;
+import com.bs.mycareer.User.dto.AuthenticationResponse;
+import com.bs.mycareer.User.dto.BSUserDetail;
+import com.bs.mycareer.User.service.BSUserDetailsService;
 import com.bs.mycareer.utils.JsonUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -20,9 +21,13 @@ import java.util.Optional;
 
 public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
 
+    @Autowired
     private final AuthenticationManager authenticationManager;
+
+    @Autowired
     private final JWTUtil jwtUtil;
 
+    @Autowired
     private final BSUserDetailsService bsUserDetailsService;
 
 
@@ -34,14 +39,16 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         this.bsUserDetailsService = bsUserDetailsService;
     }
 
+    // filter에서 로그인을 한다면 header에 json형식으로 Authorization(본문) 조작 - Javascript / fetch-api
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException {
         AuthenticationRequest authenticationRequest = JsonUtil.readValue(httpServletRequest, AuthenticationRequest.class);
 
-        //refresh 토큰이 null or 비어있을경우, 비인증 토큰으로 만들어서 인증한다.
+        //refresh 토큰이 null or 비어있을경우, 비인증 토큰으로 만들어서 인증을 보내서 -> success 로직 실행
         if (authenticationRequest.refreshToken() == null || authenticationRequest.refreshToken().isEmpty()) {
-            UsernamePasswordAuthenticationToken authenticationToken = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
-            return authenticationManager.authenticate(authenticationToken);
+            //UsernamePasswordAuthenticationToken 이거 Costom은 이번엔 하지 않는걸로....
+            UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
+            return authenticationManager.authenticate(authentication);
         } else {   //refresh 토큰이 존재하고 검증되면 access 토큰 재발급
             Optional<DecodedJWT> verifyToken = jwtUtil.verifyRefreshToken(authenticationRequest.refreshToken());
             DecodedJWT decodedJWT = verifyToken.orElseThrow(() -> new IllegalArgumentException("INVALID TOKEN"));
