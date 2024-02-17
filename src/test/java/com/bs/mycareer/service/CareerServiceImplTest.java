@@ -1,12 +1,12 @@
 package com.bs.mycareer.service;
 
-import com.bs.mycareer.Career.Career;
-import com.bs.mycareer.Career.CareerContentRepository;
-import com.bs.mycareer.Career.CareerDto;
-import com.bs.mycareer.Career.CareerServiceImpl;
-import com.bs.mycareer.dto.BSUserDetail;
-import com.bs.mycareer.entity.User;
-import com.bs.mycareer.repository.UserRepository;
+import com.bs.mycareer.Career.dto.CareerDto;
+import com.bs.mycareer.Career.entity.Career;
+import com.bs.mycareer.Career.repository.CareerContentRepository;
+import com.bs.mycareer.Career.service.CareerServiceImpl;
+import com.bs.mycareer.User.dto.BSUserDetail;
+import com.bs.mycareer.User.entity.User;
+import com.bs.mycareer.User.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -15,8 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.util.List;
@@ -53,7 +51,7 @@ class CareerServiceImplTest {
         BSUserDetail bsUserDetail = new BSUserDetail(user);
 
         // SecurityContextHolder에 UserDetails 설정
-        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bsUserDetail, null, bsUserDetail.getAuthorities()));
+//        SecurityContextHolder.getContext().setAuthentication(new UsernamePasswordAuthenticationToken(bsUserDetail, null, bsUserDetail.getAuthorities()));
 
         //when
         Career career = careerService.createCareer(careerDto);

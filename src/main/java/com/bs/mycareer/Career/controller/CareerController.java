@@ -1,5 +1,9 @@
-package com.bs.mycareer.Career;
+package com.bs.mycareer.Career.controller;
 
+import com.bs.mycareer.Career.entity.Career;
+import com.bs.mycareer.Career.repository.CareerContentRepository;
+import com.bs.mycareer.Career.dto.CareerDto;
+import com.bs.mycareer.Career.service.CareerService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,6 +20,8 @@ public class CareerController {
 
     @Autowired //자동으로 bean 등록?
     private CareerService careerService;
+
+    @Autowired
     private final CareerContentRepository careerContentRepository;
 
     //Career를 List<Career>에 추가한다.
@@ -28,7 +34,7 @@ public class CareerController {
 //
 //        }
     //커리어 작성
-    @PostMapping("user/career/create")
+    @PostMapping("/career/create")
     public Career createCareer(@RequestBody CareerDto careerDto) {
         return careerService.createCareer(careerDto);
     }
@@ -48,7 +54,7 @@ public class CareerController {
     }
 
 
-    @PutMapping("/career/{id}")
+    @PutMapping("user/career/{id}")
     public ResponseEntity<Career> updateCareer(@PathVariable Long id, @RequestBody CareerDto careerDto) {
         try {
             Career updatedCareer = careerService.updateCareer(id, careerDto);
@@ -60,7 +66,7 @@ public class CareerController {
     }
 
 
-    @DeleteMapping("career/{id}")
+    @DeleteMapping("user/career/{id}")
     public void deleteCareer(@PathVariable Long id) {
         careerService.deleteCareer(id);
     }

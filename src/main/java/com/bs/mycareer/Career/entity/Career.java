@@ -1,7 +1,8 @@
-package com.bs.mycareer.Career;
+package com.bs.mycareer.Career.entity;
 
 
-import com.bs.mycareer.entity.User;
+import com.bs.mycareer.Career.dto.CareerDto;
+import com.bs.mycareer.User.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,7 +25,7 @@ public class Career {
 
     private String title;
 
-    @Column(columnDefinition = "TEXT")
+//    @Column(columnDefinition = "TEXT")
     private String contents;
 
 

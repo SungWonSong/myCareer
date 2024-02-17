@@ -1,9 +1,13 @@
-package com.bs.mycareer.Career;
+package com.bs.mycareer.Career.service;
 
-import com.bs.mycareer.dto.BSUserDetail;
-import com.bs.mycareer.entity.User;
-import com.bs.mycareer.repository.UserRepository;
+import com.bs.mycareer.Career.entity.Career;
+import com.bs.mycareer.Career.repository.CareerContentRepository;
+import com.bs.mycareer.Career.dto.CareerDto;
+import com.bs.mycareer.User.dto.BSUserDetail;
+import com.bs.mycareer.User.entity.User;
+import com.bs.mycareer.User.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,8 +21,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CareerServiceImpl implements CareerService {
 
+    @Autowired
     private final CareerContentRepository careerContentRepository;
 
+    @Autowired
     private final UserRepository userRepository;
 
 

@@ -1,6 +1,6 @@
-package com.bs.mycareer.repository;
+package com.bs.mycareer.User.repository;
 
-import com.bs.mycareer.entity.User;
+import com.bs.mycareer.User.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

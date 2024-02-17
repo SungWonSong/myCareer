@@ -13,7 +13,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
 @Component
-@ConfigurationProperties(prefix = "app.security.jwt")
+//@ConfigurationProperties(prefix = "app.security.jwt")
 @Getter
 @Setter
 public class JWTProperties {
@@ -33,14 +33,12 @@ public class JWTProperties {
 
     public Algorithm getAccessSign() {
         // 시크릿 키를 이용하여 Algorithm 생성
-        return Algorithm.HMAC256(accessSecretKey.getEncoded());
+        return Algorithm.HMAC256(new String(accessSecretKey.getEncoded(), StandardCharsets.UTF_8));
     }
 
     public Algorithm getRefreshSign(){
-
-        return Algorithm.HMAC256(refreshSecretKey.getEncoded());
+        return Algorithm.HMAC256(new String(refreshSecretKey.getEncoded(), StandardCharsets.UTF_8));
     }
-
 
 
 }

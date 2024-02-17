@@ -1,4 +1,4 @@
-package com.bs.mycareer.dto;
+package com.bs.mycareer.User.dto;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import lombok.Getter;
@@ -18,7 +18,8 @@ public class AuthenticationResponse implements Serializable {
     @Serial
     private static final long serialVersionUID = 9181222863315822243L;
 
-    private String refreshToken;
     private String accessToken;
+    private String refreshToken;
+
 
 }

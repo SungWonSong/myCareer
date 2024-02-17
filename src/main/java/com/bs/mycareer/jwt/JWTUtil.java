@@ -2,10 +2,15 @@ package com.bs.mycareer.jwt;
 
 
 import com.auth0.jwt.JWT;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTDecodeException;
+import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.bs.mycareer.dto.AuthenticationResponse;
-import com.bs.mycareer.dto.BSUserDetail;
+import com.auth0.jwt.interfaces.JWTVerifier;
+import com.bs.mycareer.User.dto.AuthenticationResponse;
+import com.bs.mycareer.User.dto.BSUserDetail;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -18,8 +23,10 @@ public class JWTUtil {
     private static final long REFRESH_TOKEN_TIME = 2 * 7 * 24 * 60 * 60 * 1000L; // -> refresh token은 2주
 
 
+    @Autowired
     private final JWTProperties jwTproperties;
 
+    @Autowired
     private final AuthenticationResponse authenticationResponse;
 
     public JWTUtil(JWTProperties jwTproperties, AuthenticationResponse authenticationResponse) {
@@ -40,39 +47,44 @@ public class JWTUtil {
 //        }
 //
 //        return null;
-//    }
 
-    // Access_token 생성 로직
-    public String generateAccessToken(BSUserDetail bsUserDetail) {
+    // Access_token 생성 로직 ( 생성자를 넣어줘서 verify때 검증하면 좀더 높게 평가 )
+    public String createAccessToken(BSUserDetail bsUserDetail) {
         Date date = new Date();
         return Jwts.builder()
                 .claim("subject", "ACCESS_TOKEN")
-                .claim("email", bsUserDetail.getUsername())
-                .claim("role", bsUserDetail.getAuthorities().iterator().next())
+                .claim("email", bsUserDetail.getUser().getEmail())
+                .claim("authority", bsUserDetail.getAuthorities())
                 .issuedAt(date)
                 .expiration(new Date(date.getTime() + ACCESS_TOKEN_TIME))
                 .signWith(jwTproperties.getAccessSecretKey())
-                .compact();// compact()메서드 호출하여 압축된 JWT문자열 얻음
+                .compact();
+
+        // compact()메서드 호출하여 압축된 JWT문자열 얻음
+    }
+    public String generateAccessToken(BSUserDetail bsUserDetail) {
+        return createAccessToken(bsUserDetail);
     }
 
+
     // Refresh_token 생성 로직
-    public String generateRefreshToken(BSUserDetail bsUserDetail) {
+    public String createRefreshToken(BSUserDetail bsUserDetail) {
         Date date = new Date();
         return Jwts.builder()
                 .claim("subject", "REFRESH_TOKEN")
-                .claim("email", bsUserDetail.getUsername())
-                .claim("role", bsUserDetail.getAuthorities().iterator().next())
+                .claim("email", bsUserDetail.getUser().getEmail())
+                .claim("authority", bsUserDetail.getAuthorities())
                 .issuedAt(date)
                 .expiration(new Date(date.getTime() + REFRESH_TOKEN_TIME))
                 .signWith(jwTproperties.getRefreshSecretKey())
                 .compact();// compact()메서드 호출하여 압축된 JWT문자열 얻음
     }
 
-    public DecodedJWT decodeToken(String token) {
+    public String generateRefreshToken(BSUserDetail bsUserDetail) {
+        return createRefreshToken(bsUserDetail);
+    }
 
-        if (isStartWithPrefix(token)) {
-            token = removePrefix(token);
-        }
+    public DecodedJWT decodeToken(String token) {
         // Access 토큰인 경우
         if (isAccessToken(token)) {
             return JWT
@@ -90,14 +102,21 @@ public class JWTUtil {
         throw new IllegalArgumentException("Invalid token");
     }
 
-    public Optional<DecodedJWT> verifyAccessToken(String token) {
-        DecodedJWT decodedJWT = decodeToken(token);
-        if (!decodedJWT.getToken().equals(authenticationResponse.refreshToken())) {
+
+    // 추후에 expired를 오늘 날짜가 넘어가면 새로운 access token 발급 로직 작성 예정
+    public DecodedJWT verifyAccessToken(String token) {
+        try {
+            Algorithm algorithm = jwTproperties.getAccessSign();
+            JWTVerifier verifier = JWT.require(algorithm)
+                    .withClaim("subject", "ACCESS_TOKEN")
+                    .build();
+            return verifier.verify(token);
+        } catch (JWTVerificationException exception){
             throw new IllegalStateException("Invalid token");
         }
-        return Optional.of(decodedJWT);
     }
 
+    // 이건 redis 연동 예정...
     public Optional<DecodedJWT> verifyRefreshToken(String token) {
         DecodedJWT decodedJWT = decodeToken(token);
         if (!decodedJWT.getToken().equals(authenticationResponse.refreshToken())) {
@@ -109,23 +128,46 @@ public class JWTUtil {
         //Optional<UserRefreshToken> refreshToken = tokenRepository.findById(decodedJWT.getClaim("id").asString());
         //return refreshToken.filter(userRefreshToken -> userRefreshToken.refreshToken().equals(token)).map(userRefreshToken -> decodedJWT);
 
-    public Boolean isStartWithPrefix(String header){
-        return org.apache.commons.lang3.StringUtils.startsWith(header, jwTproperties.getPrefix());
+    public boolean isStartWithPrefix(String token) {
+        return token.startsWith(jwTproperties.getPrefix());
     }
 
-    public String removePrefix(String header){
-        return org.apache.commons.lang3.StringUtils.remove(header, jwTproperties.getPrefix());
+    public String removePrefix(String token){
+        return token.substring(jwTproperties.getPrefix().length());
     }
 
-    public Boolean isAccessToken(String header){
-        return decodeToken(header).getSubject().equals(jwTproperties.getAccessTokenSubject());
+    public Boolean isAccessToken(String token) {
+        if (isStartWithPrefix(token)) {
+            token = removePrefix(token);
+        }
+
+        DecodedJWT jwt;
+        try {
+            jwt = JWT.decode(token);
+        } catch (JWTDecodeException e) {
+            throw new IllegalArgumentException("Invalid token", e);
+        }
+        String subject = jwt.getSubject();
+        return subject != null && subject.trim().equals("ACCESS_TOKEN");
     }
 
-    public Boolean isRefreshToken(String header){
-        return decodeToken(header).getSubject().equals(jwTproperties.getRefreshTokenSubject());
+
+    public Boolean isRefreshToken(String token){
+        if (isStartWithPrefix(token)) {
+            token = removePrefix(token);
+        }
+        DecodedJWT jwt;
+        try {
+            jwt = JWT.decode(token);
+        } catch (JWTDecodeException e) {
+            throw new IllegalArgumentException("Invalid token", e);
+        }
+        String subject = jwt.getSubject();
+        return subject != null && subject.trim().equals("REFRESH_TOKEN");
     }
 
 }
+
 //        - claim("role",bsUserDetail.getAuthorities().iterator().next()) 이걸로 대체
 //        iterator 함수는 Collection에서 컬렉션 내의 요소를 순차적으로 접근할 때 편리하고 일관된 방법을 제공하기 때문
 //        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();

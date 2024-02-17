@@ -1,7 +1,9 @@
-package com.bs.mycareer.service;
+package com.bs.mycareer.User.service;
 
-import com.bs.mycareer.dto.BSUserDetail;
-import com.bs.mycareer.repository.UserRepository;
+import com.bs.mycareer.User.dto.BSUserDetail;
+import com.bs.mycareer.User.entity.User;
+import com.bs.mycareer.User.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -10,10 +12,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class BSUserDetailsService implements UserDetailsService {
 
+
     private final UserRepository userRepository;
 
+    @Autowired
     public BSUserDetailsService(UserRepository userRepository) {
-
         this.userRepository = userRepository;
     }
 
@@ -22,9 +25,10 @@ public class BSUserDetailsService implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
 
-        return userRepository.findByEmail(email)
-                .map(BSUserDetail::new)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 이메일입니다"));
+
+        return new BSUserDetail(user);
     }
 
 }
