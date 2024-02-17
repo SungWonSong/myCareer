@@ -1,9 +1,9 @@
 package com.bs.mycareer.config;
 
+import com.bs.mycareer.User.service.BSUserDetailsService;
 import com.bs.mycareer.jwt.JWTUtil;
 import com.bs.mycareer.jwt.UserAuthenticationFilter;
 import com.bs.mycareer.jwt.UserAuthorizationFilter;
-import com.bs.mycareer.User.service.BSUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -111,8 +111,8 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
         return http.build();
-        }
     }
+}
 
 //
 //        // 1. UserAuthFilter는 2.UsernamePasswordAuthenticationfilter를 대신하는 UserAuthenticationFilter 이 필터 전에 있다 (위치)

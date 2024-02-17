@@ -14,6 +14,8 @@ public class CareerDto {
 
     private String contents;
 
+    public CareerDto() {}
+
     //오버로딩 - 생성자 여러개 만들기 가능한거
     //문자열로 직접 제목(title)과 내용(contents)을 전달하여 CareerDto 객체를 생성할때 사용 -> request할때
     public CareerDto(String title, String contents) {

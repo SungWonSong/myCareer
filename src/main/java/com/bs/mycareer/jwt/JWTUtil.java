@@ -51,6 +51,7 @@ public class JWTUtil {
     // Access_token 생성 로직 ( 생성자를 넣어줘서 verify때 검증하면 좀더 높게 평가 )
     public String createAccessToken(BSUserDetail bsUserDetail) {
         Date date = new Date();
+
         return Jwts.builder()
                 .claim("subject", "ACCESS_TOKEN")
                 .claim("email", bsUserDetail.getUser().getEmail())
@@ -88,14 +89,14 @@ public class JWTUtil {
         // Access 토큰인 경우
         if (isAccessToken(token)) {
             return JWT
-                    .require(jwTproperties.getAccessSign())
+                    .require(Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded()))
                     .build()
                     .verify(token);
         }
         // Refresh 토큰인 경우
         else if (isRefreshToken(token)) {
             return JWT
-                    .require(jwTproperties.getRefreshSign())
+                    .require(Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded()))
                     .build()
                     .verify(token);
         }
@@ -106,8 +107,7 @@ public class JWTUtil {
     // 추후에 expired를 오늘 날짜가 넘어가면 새로운 access token 발급 로직 작성 예정
     public DecodedJWT verifyAccessToken(String token) {
         try {
-            Algorithm algorithm = jwTproperties.getAccessSign();
-            JWTVerifier verifier = JWT.require(algorithm)
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded()))
                     .withClaim("subject", "ACCESS_TOKEN")
                     .build();
             return verifier.verify(token);
@@ -133,6 +133,7 @@ public class JWTUtil {
     }
 
     public String removePrefix(String token){
+
         return token.substring(jwTproperties.getPrefix().length());
     }
 

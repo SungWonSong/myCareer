@@ -55,7 +55,7 @@ public class CareerController {
     }
 
 
-    @PutMapping("user/career/{id}")
+    @PutMapping("/career/{id}")
     public ResponseEntity<Career> updateCareer(@PathVariable Long id, @RequestBody CareerDto careerDto) {
         try {
             Career updatedCareer = careerService.updateCareer(id, careerDto);
@@ -67,7 +67,7 @@ public class CareerController {
     }
 
 
-    @DeleteMapping("user/career/{id}")
+    @DeleteMapping("/career/{id}")
     public void deleteCareer(@PathVariable Long id) {
         careerService.deleteCareer(id);
     }

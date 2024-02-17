@@ -17,42 +17,44 @@ import java.io.IOException;
 
 public class UserAuthorizationFilter extends OncePerRequestFilter {
 
-        @Autowired
-        private final JWTUtil jwtUtil;
+    @Autowired
+    private final JWTUtil jwtUtil;
 
-        @Autowired
-        private final BSUserDetailsService bsUserDetailsService;
+    @Autowired
+    private final BSUserDetailsService bsUserDetailsService;
 
 
-        public UserAuthorizationFilter(JWTUtil jwtUtil, BSUserDetailsService bsUserDetailsService){
-            this.jwtUtil = jwtUtil;
-            this.bsUserDetailsService = bsUserDetailsService;
+    public UserAuthorizationFilter(JWTUtil jwtUtil, BSUserDetailsService bsUserDetailsService) {
+        this.jwtUtil = jwtUtil;
+        this.bsUserDetailsService = bsUserDetailsService;
+    }
+
+    @Override
+    protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
+                                    FilterChain filterChain) throws ServletException, IOException {
+        String token = httpServletRequest.getHeader("Authorization");
+
+        if (token == null || !jwtUtil.isStartWithPrefix(token)) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
         }
 
-        @Override
-        protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
-                                        FilterChain filterChain) throws ServletException, IOException {
-            String token = httpServletRequest.getHeader("Authorization");
+        if (token.contains("Bearer ")) {
+            jwtUtil.removePrefix(token);
+        }
 
-            if(token == null || !jwtUtil.isStartWithPrefix(token)){
-                filterChain.doFilter(httpServletRequest, httpServletResponse);
-                return;
-            }
+        DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
 
+        if (!jwtUtil.isAccessToken(token)) {
+            throw new IllegalArgumentException("INVALID ACCESS TOKEN");
+        }
 
-            DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
+        String email = decodedJWT.getClaim(token).asString();
+        BSUserDetail bsUserDetail = (BSUserDetail) bsUserDetailsService.loadUserByUsername(email);
+        UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(bsUserDetail, null, bsUserDetail.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authenticated);
 
-            if(!jwtUtil.isAccessToken(token)){
-                throw new IllegalArgumentException("INVALID ACCESS TOKEN");
-            }
-
-            String email = decodedJWT.getClaim("email").asString();
-            BSUserDetail bsUserDetail = (BSUserDetail) bsUserDetailsService.loadUserByUsername(email);
-            UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(bsUserDetail, null, bsUserDetail.getAuthorities());
-            SecurityContextHolder.getContext().setAuthentication(authenticated);
-
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-
-            }
+        filterChain.doFilter(httpServletRequest, httpServletResponse);
+    }
 }
 
