@@ -66,8 +66,8 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         String refreshToken = jwtUtil.generateRefreshToken(bsUserDetail);
 
         AuthenticationResponse authenticationResponse = new AuthenticationResponse().accessToken(accessToken).refreshToken(refreshToken);
-        // refresh token은 현재 dto에 저장을 해놓지만 원래 db에서 꺼내서 유효하면 그걸 가지고 access 발급
-        httpServletResponse.addHeader("Authorization", "Bearer " + authenticationResponse.accessToken());
+        // refresh token은 redis에 저장 / accesstoken은 header에 담아서 반환해서 저장 x
+        httpServletResponse.addHeader("Authorization", "Bearer " + accessToken);
 
     }
 
