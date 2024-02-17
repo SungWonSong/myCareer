@@ -39,9 +39,9 @@ public class CareerServiceImpl implements CareerService {
         // 현재 사용자 정보 가져오기
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        if (principal instanceof BSUserDetail userDetails) {
+        if (principal instanceof BSUserDetail bsuserDetails) {
             // UserDetails를 구현한 사용자 정보 클래스로 형변환
-            User user = userDetails.getUser();
+            User user = bsuserDetails.getUser();
 
             career.setUser(user);
 
