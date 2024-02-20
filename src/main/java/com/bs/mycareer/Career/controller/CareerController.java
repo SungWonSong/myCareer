@@ -1,13 +1,15 @@
 package com.bs.mycareer.Career.controller;
 
+import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.Career.entity.Career;
 import com.bs.mycareer.Career.repository.CareerContentRepository;
-import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.Career.service.CareerService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
@@ -34,9 +36,10 @@ public class CareerController {
 //
 //        }
     //커리어 작성
+    @Transactional
     @PostMapping("/career/create")
-    public Career createCareer(@RequestBody CareerDto careerDto) {
-        return careerService.createCareer(careerDto);
+    public Career createCareer(@RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
+        return careerService.createCareer(careerDto,httpServletRequest);
     }
 
 

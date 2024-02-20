@@ -8,6 +8,7 @@ import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
 import jakarta.transaction.Transactional;
+import org.apache.catalina.filters.ExpiresFilter;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -41,6 +42,7 @@ class CareerServiceImplTest {
     @Transactional
     public void createCareerTest() throws Exception {
         //given
+
         CareerDto careerDto = new CareerDto("김보아 이력서", "자기소개서입니다~~");
         User user = new User("보아","bs34@naver.com","USER");
         BSUserDetail bsUserDetail = new BSUserDetail(user);
