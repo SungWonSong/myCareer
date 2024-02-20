@@ -2,6 +2,7 @@ package com.bs.mycareer.Career.service;
 
 import com.bs.mycareer.Career.entity.Career;
 import com.bs.mycareer.Career.dto.CareerDto;
+import jakarta.servlet.http.HttpServletRequest;
 
 import java.nio.file.AccessDeniedException;
 import java.util.List;
@@ -9,7 +10,7 @@ import java.util.List;
 public interface CareerService {
 
     //커리어 작성
-    Career createCareer(CareerDto careerDto);
+    Career createCareer(CareerDto careerDto, HttpServletRequest httpServletRequest);
 
 
     CareerDto getCareerById(Long id);

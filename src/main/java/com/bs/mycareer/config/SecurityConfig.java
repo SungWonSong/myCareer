@@ -10,12 +10,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -37,15 +39,28 @@ import static java.util.Arrays.asList;
 
 public class SecurityConfig {
 
+    @Autowired
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
+
 
     //AuthenticationManager가 인자로 받을 AuthenticationConfiguraion 객체 생성자 주입
     @Autowired
     private final AuthenticationConfiguration authenticationConfiguration;
 
 
-    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration) {
 
+    public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationConfiguration = authenticationConfiguration;
+    }
+
+    @Autowired
+    public void configure(AuthenticationManagerBuilder auth) throws Exception {
+        auth.userDetailsService(userDetailsService)
+                .passwordEncoder(bCryptPasswordEncoder);
     }
 
     //authenciationManager를 get을 해서 가져오면 여러 인증시스템에서 authenticationmanager를 생성이 아니라 호출해서 사용하면 확정성에 용이
@@ -54,11 +69,10 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-    @Bean // 스프링 컨테이너(Spring Container)에 의해 관리되는 메서드로 의미수동으로 해당 어노테이션을 통하여 주입을 합니다.
-    public BCryptPasswordEncoder bCryptPasswordEncoder() {
-
-        return new BCryptPasswordEncoder();
-    }
+//    @Bean // 스프링 컨테이너(Spring Container)에 의해 관리되는 메서드로 의미수동으로 해당 어노테이션을 통하여 주입을 합니다.
+//    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+//        return new BCryptPasswordEncoder();
+//    }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
@@ -86,8 +100,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserAuthorizationFilter userAuthorizationFilter(BSUserDetailsService bsUserDetailsService, JWTUtil jwtUtil) {
-        return new UserAuthorizationFilter(jwtUtil, bsUserDetailsService);
+    public UserAuthorizationFilter userAuthorizationFilter(JWTUtil jwtUtil) {
+        return new UserAuthorizationFilter(jwtUtil);
     }
 
     @Bean
@@ -102,10 +116,10 @@ public class SecurityConfig {
                 // authorizeRequests / antmachers 다 현재 스프링 시큐리티에서는 적용안됨... 다 depreiciated됨
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
                         .requestMatchers("/login","*/*","/register").permitAll()
-                        .requestMatchers("/career/**").hasAuthority("USER")
+                        .requestMatchers("/career/**").permitAll()
                         .anyRequest().authenticated()
                 )
-                .addFilterBefore(new UserAuthorizationFilter(jwtUtil, bsUserDetailsService), UserAuthenticationFilter.class)
+                .addFilterBefore(new UserAuthorizationFilter(jwtUtil), UserAuthenticationFilter.class)
                 .addFilterAt(new UserAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtUtil, bsUserDetailsService), UsernamePasswordAuthenticationFilter.class)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
