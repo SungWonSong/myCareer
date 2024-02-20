@@ -1,6 +1,7 @@
 package com.bs.mycareer.User.entity;
 
 import com.bs.mycareer.Career.entity.Career;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,6 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
+    @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Career> careers = new ArrayList<>();
 

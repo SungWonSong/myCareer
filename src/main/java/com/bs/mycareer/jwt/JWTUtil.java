@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
-import java.util.Optional;
 
 
 @Component //jwt 0.12.3 버전 사용 (타 블로그: 0.11.5)
@@ -34,26 +33,12 @@ public class JWTUtil {
         this.authenticationResponse = authenticationResponse;
     }
 
-    //SecretKey라는 밑 코드를 통해 객체화 된 키를 사용(HS256는 대표적인 대칭 키 방식이며, 한 번 생성된 키를 애플리케이션 내에서만 사용) -> access refresh 나누기
-
-
-//    public String resolveAccessToken(HttpServletRequest httpServletRequest) {
-//        // Authorization 헤더에서 토큰을 추출
-//        String authorizationHeader = httpServletRequest.getHeader("Authorization");
-//
-//        if (StringUtils.hasText(authorizationHeader) && authorizationHeader.startsWith("Bearer ")) {
-//            // "Bearer " 이후의 문자열이 토큰이므로 추출
-//            return authorizationHeader.substring(7);
-//        }
-//
-//        return null;
-
     // Access_token 생성 로직 ( 생성자를 넣어줘서 verify때 검증하면 좀더 높게 평가 )
     public String createAccessToken(BSUserDetail bsUserDetail) {
         Date date = new Date();
 
         return Jwts.builder()
-                .claim("subject", "ACCESS_TOKEN")
+                .subject("ACCESS_TOKEN")
                 .claim("email", bsUserDetail.getUser().getEmail())
                 .claim("authority", bsUserDetail.getAuthorities())
                 .issuedAt(date)
@@ -63,6 +48,7 @@ public class JWTUtil {
 
         // compact()메서드 호출하여 압축된 JWT문자열 얻음
     }
+
     public String generateAccessToken(BSUserDetail bsUserDetail) {
         return createAccessToken(bsUserDetail);
     }
@@ -72,7 +58,7 @@ public class JWTUtil {
     public String createRefreshToken(BSUserDetail bsUserDetail) {
         Date date = new Date();
         return Jwts.builder()
-                .claim("subject", "REFRESH_TOKEN")
+                .subject("REFRESH_TOKEN")
                 .claim("email", bsUserDetail.getUser().getEmail())
                 .claim("authority", bsUserDetail.getAuthorities())
                 .issuedAt(date)
@@ -96,7 +82,7 @@ public class JWTUtil {
         // Refresh 토큰인 경우
         else if (isRefreshToken(token)) {
             return JWT
-                    .require(Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded()))
+                    .require(Algorithm.HMAC256(jwTproperties.getRefreshSecretKey().getEncoded()))
                     .build()
                     .verify(token);
         }
@@ -108,31 +94,36 @@ public class JWTUtil {
     public DecodedJWT verifyAccessToken(String token) {
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded()))
-                    .withClaim("subject", "ACCESS_TOKEN")
+                    .withSubject("ACCESS_TOKEN")
                     .build();
+
             return verifier.verify(token);
-        } catch (JWTVerificationException exception){
+        } catch (JWTVerificationException exception) {
             throw new IllegalStateException("Invalid token");
         }
     }
+
 
     // 이건 redis 연동 예정...
-    public Optional<DecodedJWT> verifyRefreshToken(String token) {
-        DecodedJWT decodedJWT = decodeToken(token);
-        if (!decodedJWT.getToken().equals(authenticationResponse.refreshToken())) {
+    public DecodedJWT verifyRefreshToken(String token) {
+        try {
+            JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwTproperties.getRefreshSecretKey().getEncoded()))
+                    .withSubject("REFRESH_TOKEN")
+                    .build();
+            return verifier.verify(token);
+        } catch (JWTVerificationException exception) {
             throw new IllegalStateException("Invalid token");
         }
-        return Optional.of(decodedJWT);
-
     }
-        //Optional<UserRefreshToken> refreshToken = tokenRepository.findById(decodedJWT.getClaim("id").asString());
-        //return refreshToken.filter(userRefreshToken -> userRefreshToken.refreshToken().equals(token)).map(userRefreshToken -> decodedJWT);
+    //Optional<UserRefreshToken> refreshToken = tokenRepository.findById(decodedJWT.getClaim("id").asString());
+    //return refreshToken.filter(userRefreshToken -> userRefreshToken.refreshToken().equals(token)).map(userRefreshToken -> decodedJWT);
 
     public boolean isStartWithPrefix(String token) {
+
         return token.startsWith(jwTproperties.getPrefix());
     }
 
-    public String removePrefix(String token){
+    public String removePrefix(String token) {
 
         return token.substring(jwTproperties.getPrefix().length());
     }
@@ -153,7 +144,7 @@ public class JWTUtil {
     }
 
 
-    public Boolean isRefreshToken(String token){
+    public Boolean isRefreshToken(String token) {
         if (isStartWithPrefix(token)) {
             token = removePrefix(token);
         }
@@ -167,6 +158,11 @@ public class JWTUtil {
         return subject != null && subject.trim().equals("REFRESH_TOKEN");
     }
 
+    void destroyAccessToken(AuthenticationResponse authenticationResponse) {
+        if (authenticationResponse != null) {
+            authenticationResponse.accessToken(null);
+        }
+    }
 }
 
 //        - claim("role",bsUserDetail.getAuthorities().iterator().next()) 이걸로 대체
@@ -193,24 +189,7 @@ public class JWTUtil {
 //
 //    private final UserDetailsService userDetailsService;
 //
-//    // 객체 초기화, secretKey를 Base64로 인코딩한다.
-//    @PostConstruct
-//    protected void init() {
-//        secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
-//    }
 //
-//    // JWT 토큰 생성
-//    public String createToken(String userPk, List<String> roles) {
-//        Claims claims = Jwts.claims().setSubject(userPk); // JWT payload 에 저장되는 정보단위, 보통 여기서 user를 식별하는 값을 넣는다.
-//        claims.put("roles", roles); // 정보는 key / value 쌍으로 저장된다.
-//        Date now = new Date();
-//        return Jwts.builder()
-//                .setClaims(claims) // 정보 저장
-//                .setIssuedAt(now) // 토큰 발행 시간 정보
-//                .setExpiration(new Date(now.getTime() + tokenValidTime)) // set Expire Time
-//                .signWith(SignatureAlgorithm.HS256, secretKey)  // 사용할 암호화 알고리즘과
-//                // signature 에 들어갈 secret값 세팅
-//                .compact();
 //    }
 //
 //    // JWT 토큰에서 인증 정보 조회
