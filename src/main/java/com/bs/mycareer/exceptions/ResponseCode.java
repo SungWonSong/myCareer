@@ -68,7 +68,16 @@ public enum ResponseCode {
 
 
     //서버에러
-    INTERNAL_SERVER_ERROR(BAD_REQUEST, "서버에러 입니다.")
+    INTERNAL_SERVER_ERROR(BAD_REQUEST, "서버에러 입니다."),
+
+    //토큰 에러
+    INVALID_ACCESS_TOKEN(BAD_REQUEST, "잘못된 ACCESS 토큰값 입니다."),
+
+    INVALID_TOKEN(BAD_REQUEST, "잘못된 토큰값 입니다."),
+
+    //토큰에서 사용자 정보 검색에 실패했을때 Failed to retrieve user details
+    FAILED_TO_SEARCH_USER_DETAILS(BAD_REQUEST, "사용자 정보를 찾을 수 없습니다.")
+
     ;
 
     private final HttpStatus httpStatus;

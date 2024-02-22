@@ -11,9 +11,9 @@ public interface CareerService {
 
     //커리어 작성
 //<<<<<<< HEAD
-//    Career createCareer(String title, String content, User author);
+    Career createCareer(String title, String content, HttpServletRequest httpServletRequest );
 //=======
-    Career createCareer(CareerDto careerDto, HttpServletRequest httpServletRequest);
+//    Career createCareer(CareerDto careerDto, HttpServletRequest httpServletRequest);
 //>>>>>>> a08333bbb122d5deb66a88d7f0c4245e3e54d052
 
 
@@ -21,8 +21,8 @@ public interface CareerService {
 
     List<CareerDto> getAllCareers();
 
-    void editCareer(Long id, CareerDto careerDto);
+    void editCareer(Long id, CareerDto careerDto , HttpServletRequest httpServletRequest);
 
     //커리어 삭제
-    void deleteCareer(Long id);
+    void deleteCareer(Long id, HttpServletRequest httpServletRequest);
 }

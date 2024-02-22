@@ -42,9 +42,7 @@ public class BSUserDetail implements UserDetails {
 //        this.user.getRole().addAll(authoritiesSet);  // 새로운 권한 추가
 //    }
 
-    public User getUser(){
-        return user;
-    }
+
     @Override
         public String getUsername() {
 

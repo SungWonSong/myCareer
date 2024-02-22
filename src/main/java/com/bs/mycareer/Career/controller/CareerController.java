@@ -55,8 +55,19 @@ public class CareerController {
 //        careerService.createCareer(title, content,  bsUserDetails.getUser());
 //        return ServerResponse.toResponseEntity(SUCCESS_CREATE);
 //=======
-    public Career createCareer(@RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
-        return careerService.createCareer(careerDto,httpServletRequest);
+    public ResponseEntity<ServerResponse> createCareer(@RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
+        // 게시글 유효성 검증 (빈칸 없게끔)
+        String title = careerDto.getTitle();
+        String content = careerDto.getContent();
+        if (title.trim().equals("")) {
+            throw new CustomException(INVALID_CAREER_TITLE);
+        }
+
+        if (content.trim().equals("")) {
+            throw new CustomException(INVALID_CONTENT);
+        }
+        careerService.createCareer(title, content, httpServletRequest);
+        return ServerResponse.toResponseEntity(SUCCESS_CREATE);
 
     }
 
@@ -76,16 +87,16 @@ public class CareerController {
 
     //커리어 수정
     @PutMapping("/career/{id}")
-    public ResponseEntity<ServerResponse> editCareer(@PathVariable Long id, @RequestBody CareerDto careerDto) {
+    public ResponseEntity<ServerResponse> editCareer(@PathVariable Long id, @RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
 
-        careerService.editCareer(id, careerDto);
+        careerService.editCareer(id, careerDto, httpServletRequest);
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 
     //커리어 삭제
     @DeleteMapping("/career/{id}")
-    public ResponseEntity<ServerResponse> deleteCareer(@PathVariable Long id) {
-        careerService.deleteCareer(id);
+    public ResponseEntity<ServerResponse> deleteCareer(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+        careerService.deleteCareer(id, httpServletRequest);
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
 

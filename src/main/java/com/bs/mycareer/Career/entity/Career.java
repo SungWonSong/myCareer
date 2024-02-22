@@ -30,10 +30,10 @@ public class Career {
     private String title;
 
     private String content;
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    @JsonIgnore
-    private User author;
+//    @ManyToOne
+//    @JoinColumn(name = "user_id")
+//    @JsonIgnore
+//    private User author;
 
 
     //실제 db에서 삭제하는 것이 아니라 보이지만 않게끔 하려고 씀! => 실제 db에서
@@ -43,15 +43,15 @@ public class Career {
     public Career(CareerDto careerDto, User user) {
         this.title = careerDto.getTitle();
         this.content = careerDto.getContent();
-        this.author = user;
+        this.user = user;
         this.available = true;
 
     }
 
-    public Career(String title, String content, User author) {
+    public Career(String title, String content, User user) {
         this.title = title;
         this.content = content;
-        this.author = author;
+        this.user = user;
         this.available = true;
     }
 
