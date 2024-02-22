@@ -8,6 +8,7 @@ import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
 import com.bs.mycareer.User.service.BSUserDetailsService;
+import com.bs.mycareer.jwt.JWTProperties;
 import com.bs.mycareer.jwt.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,9 @@ public class CareerServiceImpl implements CareerService {
 
     @Autowired
     private final JWTUtil jwtUtil;
+
+    @Autowired
+    final JWTProperties jwtProperties;
 
     @Autowired
     private final BSUserDetailsService bsUserDetailsService;

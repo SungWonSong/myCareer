@@ -3,6 +3,7 @@ package com.bs.mycareer.User.service;
 import com.bs.mycareer.User.dto.RegisterRequest;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
+import com.bs.mycareer.jwt.JWTUtil;
 import com.bs.mycareer.utils.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +14,7 @@ import java.util.Optional;
 
 //예외처리는 추후에 따로 모아서 진행할 예정....
 @Service
-public class UserServiceImpl implements UserService{
+public class UserServiceImpl implements UserService {
 
     //생성자를 사용함으로써 의존성 주입 (자동 bean 주입인 @Autowired 사용하면 고효율)
     @Autowired
@@ -21,18 +22,22 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
+    
+    @Autowired
+    private final JWTUtil jwtUtil;
 
 
-    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,JWTUtil jwtUtil) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
+        this.jwtUtil  = jwtUtil;
     }
 
     @Override
     @Transactional
     public void registerProcess(RegisterRequest registerRequest) {
 
-        if(registerRequest == null) {
+        if (registerRequest == null) {
             throw new IllegalArgumentException("RegisterRequest가 null입니다.");
         }
 
@@ -49,7 +54,7 @@ public class UserServiceImpl implements UserService{
             throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다.");
         }
 
-        if(email == null || password == null) {
+        if (email == null || password == null) {
             throw new IllegalArgumentException("이메일 또는 비밀번호가 null입니다.");
         }
 
@@ -63,15 +68,30 @@ public class UserServiceImpl implements UserService{
         //user.setId(id);  -> Id의 값은 Generated value에 의해 지정해줄 필요 없다(수동으로 x)
         //builder 함수를 사용 : registerRequest에서 결국 빌드해서 Entity 객체화 해줘야된다.
         User user = registerRequest.toEntity(encodedPassword);
-        if(user == null) {
+        if (user == null) {
             throw new RuntimeException("User 객체 생성에 실패했습니다.");
         }
 
         try {
             userRepository.save(user);
-        } catch(Exception e) {
+        } catch (Exception e) {
             throw new RuntimeException("데이터베이스 저장에 실패했습니다.", e);
         }
     }
+
+
+//    @Override
+//    @Transactional
+//    public void logoutProcess(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+//
+//        Object savedAccessToken = httpServletRequest.getSession().getAttribute("savedAccessToken");
+//        System.out.println("accessTokenResponse = " + savedAccessToken);
+//
+////        }
+//
+//
+//        httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login");
+//    }
+
 }
 

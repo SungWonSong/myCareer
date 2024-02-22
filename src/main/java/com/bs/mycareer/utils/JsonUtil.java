@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+import java.io.OutputStream;
 
 public class JsonUtil {
 
@@ -17,15 +18,15 @@ public class JsonUtil {
             throw new CommonException(e.getMessage(), e);
         }
     }
+    public static void writeValue(OutputStream stream, Object value) {
+        try {
+            mapper.writeValue(stream, value);
+        } catch (IOException e) {
+            throw new CommonException(e.getMessage(), e);
+        }
+    }
 }
 
-//    public static void writeValue(OutputStream stream, Object value) {
-//        try {
-//            mapper.writeValue(stream, value);
-//        } catch (IOException e) {
-//            throw new CommonException(e.getMessage(), e);
-//        }
-//    }
 
 //    public static void writeValue(HttpServletResponse response, Object value) {
 //        try {
