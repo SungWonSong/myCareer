@@ -54,7 +54,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         RefreshTokenResponse refreshTokenResponse = (RefreshTokenResponse) session.getAttribute("savedRefreshToken");
 
         // 첫로그인일때 ....
-        if (accessTokenResponse.accessToken() == null && refreshTokenResponse.refreshToken() == null) {
+        if (accessTokenResponse == null && refreshTokenResponse == null) {
             UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
             return authenticationManager.authenticate(authentication);
 
@@ -109,7 +109,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         HttpSession session = httpServletRequest.getSession(false);
         
         if (session.getAttribute("savedAccessToken") == null) {
-            AccessTokenResponse savedAccessToken = (AccessTokenResponse) session.getAttribute("savedAccessToken");
+            AccessTokenResponse savedAccessToken = new AccessTokenResponse();
             savedAccessToken.accessToken(accessToken);
             session.setAttribute("savedAccessToken", savedAccessToken);
             JsonUtil.writeValue(httpServletResponse.getOutputStream(), savedAccessToken);
