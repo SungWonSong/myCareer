@@ -8,18 +8,21 @@ import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
 import com.bs.mycareer.User.service.BSUserDetailsService;
+import com.bs.mycareer.exceptions.CustomException;
 import com.bs.mycareer.jwt.JWTProperties;
 import com.bs.mycareer.jwt.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.nio.file.AccessDeniedException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import static com.bs.mycareer.exceptions.ResponseCode.*;
 
 // 핵심 비지니스 로직 구현
 @Service
@@ -45,33 +48,10 @@ public class CareerServiceImpl implements CareerService {
     //커리어 작성
     @Override
     @Transactional
-    public Career createCareer(CareerDto careerDto, HttpServletRequest httpServletRequest) {
-        String token = httpServletRequest.getHeader("Authorization");
-
-        if (token.contains("Bearer ")) {
-            token = jwtUtil.removePrefix(token);
-        }
-
-        if (!jwtUtil.isAccessToken((token))) {
-            throw new IllegalArgumentException("INVALID ACCESS TOKEN");
-        }
-
-        BSUserDetail bsUserDetail = null;
-        try {
-            DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
-            String email = decodedJWT.getClaim("email").asString();
-            bsUserDetail = bsUserDetailsService.loadUserByUsername(email);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Failed to retrieve user details");
-        }
-
-        User user = bsUserDetail.getUser();
+    public Career createCareer(String title, String content, HttpServletRequest httpServletRequest) {
         // 현재 사용자 정보 가져오기
-
-        Career career = new Career();
-        career.setTitle(careerDto.getTitle());
-        career.setContents(careerDto.getContents());
-        career.setUser(user);
+        User user = getCurrentUserFromToken(httpServletRequest);
+        Career career = new Career(title, content, user);
         // 사용자의 경력 목록에 추가
         user.getCareers().add(career);
         // 커리어 저장
@@ -82,22 +62,21 @@ public class CareerServiceImpl implements CareerService {
     }
 
 
-
     //커리어 id별 조회
     @Override
     @Transactional(readOnly = true)
     public CareerDto getCareerById(Long id) {
-        Career career = findCareer(id);
-        return new CareerDto(career.getTitle(), career.getContents());
+        Career foundCareer = findCareer(id);
+        return new CareerDto(foundCareer);
     }
-
 
     //전체 커리어 조회
     @Override
     @Transactional(readOnly = true)
     public List<CareerDto> getAllCareers() {
         List<CareerDto> careerDtoList = new ArrayList<>();
-        List<Career> careers = careerContentRepository.findAll();
+        List<Career> careers = careerContentRepository
+                .findAllByAvailableTrue(Sort.by("id").ascending());
         for (Career career : careers) {
             careerDtoList.add(new CareerDto(career));
         }
@@ -107,67 +86,108 @@ public class CareerServiceImpl implements CareerService {
 
     @Transactional
     @Override
-    public Career updateCareer(Long id, CareerDto careerDto) throws AccessDeniedException {
+    public void editCareer(Long id, CareerDto careerDto, HttpServletRequest httpServletRequest) {
         Career career = findCareer(id);
+        String title = careerDto.getTitle();
+        String content = careerDto.getContent();
 
         // 사용자 찾아서 가지고 있는지 확인후 update로 진행후 저장(
-        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        if (principal instanceof BSUserDetail userDetails) {
-            User user = userDetails.getUser();
+        User user = getCurrentUserFromToken(httpServletRequest);
 
-            // 현재 사용자가 해당 경력을 가지고 있으면 update 진행
-            if (user.getCareers().contains(career)) {
-                career.setTitle(careerDto.getTitle());
-                career.setContents(careerDto.getContents());
+        // 현재 사용자가 해당 경력을 가지고 있으면 update 진행
+        if (user.getCareers().contains(career)) {
 
-                careerContentRepository.save(career);
-                userRepository.save(user);
-
-                // 업데이트된 경력 반환
-                return career;
-            } else {
-                // 사용자가 해당 경력을 가지고 있지 않을 경우
-                throw new AccessDeniedException("현재 사용자가 해당 경력을 수정할 권한이 없습니다.");
+            // 제목과 내용 모두 빈 칸이면 예외를 발생시킨다.
+            if (title.trim().isEmpty() && content.trim().isEmpty()) {
+                throw new CustomException(INVALID_EDIT_VALUE);
             }
+
+            // 제목만 빈 칸이면 원본 제목을 유지한다.
+            if (title.trim().isEmpty()) {
+                title = career.getTitle();
+            }
+
+            // 내용만 빈 칸이면 원본 내용을 유지한다.
+            if (content.trim().isEmpty()) {
+                content = career.getContent();
+            }
+
+            career.edit(title, content);
+            careerContentRepository.save(career);
+            userRepository.save(user);
+
+            // 업데이트된 경력 반환
         } else {
-            // 현재 사용자가 BSUserDetail의 인스턴스가 아닐 경우
-            throw new IllegalStateException("인증된 사용자 정보를 찾을 수 없습니다.");
+            // 사용자가 해당 경력을 가지고 있지 않을 경우
+            throw new CustomException(INVALID_AUTH_TOKEN);
         }
     }
 
-
-//    @Override
-//    @Transactional(readOnly = true)
-//    public Career updateCareer(User user){
-//        Career career = findCareer(user.getCareers()
-//    }
-//
-//    //커리어 수정
-//    @Override
-//    public Career updateCareer(Long id, CareerDto careerDto) {
-//        Career foundedCareer = findCareer(id);
-//        if (foundedCareer.) {
-//            Career career = optionalCareer.get();
-//            career.setTitle(careerDto.getTitle());
-//            career.setContents(careerDto.getContents());
-//            return careerContentRepository.save(career);
-//        }
-//        return null; //예외 처리 방법 논의ㄱㄱ
-//    }
-
-
     //커리어 삭제
     @Override
-    public void deleteCareer(Long id) {
-        careerContentRepository.deleteById(id);
+    @Transactional
+    public void deleteCareer(Long id, HttpServletRequest httpServletRequest) {
+        Career foundCareer = findCareer(id);
+
+        // 사용자 찾아서 가지고 있는지 확인후 delete 진행후 저장(
+        User user = getCurrentUserFromToken(httpServletRequest);
+        // 현재 사용자가 해당 경력을 가지고 있으면 delete 진행
+        if (user.getCareers().contains(foundCareer)) {
+            foundCareer.delete();
+            careerContentRepository.flush(); // 변경 사항을 데이터베이스에 반영
+            userRepository.save(user);
+        } else {
+            // 사용자가 해당 경력을 가지고 있지 않을 경우
+            throw new CustomException(INVALID_AUTH_TOKEN);
+        }
+
     }
 
 
     public Career findCareer(Long id) {
-        return careerContentRepository.findCareerById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당하는 id의 career를 찾지못했습니다: " + id));
+        Optional<Career> foundCareer = careerContentRepository.findCareerById(id);
+        if (foundCareer.isEmpty()) {
+            throw new CustomException(CAREER_NOT_FOUND);
+        }
+        Career career = foundCareer.get();
+        System.out.println("career.isAvailable() = " + career.isAvailable());
+        if (!career.isAvailable()) {
+            throw new CustomException(CAREER_IS_DELETED);
+        }
+        return career;
     }
 
+    private User getCurrentUserFromToken(HttpServletRequest httpServletRequest) {
+        String token = extractTokenFromHeader(httpServletRequest.getHeader("Authorization"));
+        validateAccessToken(token);
+
+        BSUserDetail bsUserDetail = null;
+        try {
+            DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
+            String email = decodedJWT.getClaim("email").asString();
+            bsUserDetail = bsUserDetailsService.loadUserByUsername(email);
+        } catch (Exception e) {
+            throw new CustomException(FAILED_TO_SEARCH_USER_DETAILS);
+        }
+
+        return bsUserDetail.getUser();
     }
+
+
+    // 메소드를 나눈건 좋은거라 나중에 jwtutil로 옮겨서 이작업을 추후에 할것!
+    private String extractTokenFromHeader(String authorizationHeader) {
+        if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
+            return jwtUtil.removePrefix(authorizationHeader);
+        }
+        throw new IllegalArgumentException("Invalid or missing Authorization header"); //여긴 굳이 customException 할필요 없을듯 반복사용안할거같아서
+    }
+
+
+    private void validateAccessToken(String token) {
+        if (!jwtUtil.isAccessToken(token)) {
+            throw new CustomException(INVALID_ACCESS_TOKEN);
+        }
+    }
+}
 
 

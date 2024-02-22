@@ -24,13 +24,17 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = httpServletRequest.getHeader("Authorization");
+
         
-        if ((token != null) && jwtUtil.isStartWithPrefix(token)) {
+        if ((token != null) && (jwtUtil.isStartWithPrefix(token))) {
             token = jwtUtil.removePrefix(token);
         }
+
+        // validate안하면 로그인페이지로 넘겨줘야된다... (수정필요)
         if (!jwtUtil.validateAccessToken(token)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
+
         } else {
             httpServletResponse.addHeader("Authorization", "Bearer " + token);
             filterChain.doFilter(httpServletRequest, httpServletResponse);

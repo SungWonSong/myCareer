@@ -19,8 +19,12 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
+//<<<<<<< HEAD
+//    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//=======
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+//>>>>>>> a08333bbb122d5deb66a88d7f0c4245e3e54d052
     private List<Career> careers = new ArrayList<>();
 
 
@@ -48,4 +52,9 @@ public class User {
         this.role = role;
     }
 
+
+//    public void addCareer(Career career) {
+//        careers.add(career);
+//        career.setUser(this);
+//    }
 }

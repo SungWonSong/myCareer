@@ -1,6 +1,7 @@
 package com.bs.mycareer.Career.repository;
 
 import com.bs.mycareer.Career.entity.Career;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,12 +13,10 @@ import java.util.Optional;
 
 public interface CareerContentRepository extends JpaRepository<Career, Integer> {
 
-    void deleteById(Long id);
-    List<Career> findAll(); //글 조회
+    List<Career> findAllByAvailableTrue(Sort sort); //전체 글 조회
     Optional<Career> findCareerById(Long id); //id 별 글 조회
 
 
-//    Career updateCareer(Long id, CareerDto careerDto);
 
 }
 

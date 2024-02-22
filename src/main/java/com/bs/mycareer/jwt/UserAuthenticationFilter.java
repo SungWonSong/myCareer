@@ -53,7 +53,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         AccessTokenResponse accessTokenResponse = (AccessTokenResponse) session.getAttribute("savedAccessToken");
         RefreshTokenResponse refreshTokenResponse = (RefreshTokenResponse) session.getAttribute("savedRefreshToken");
 
-        // 첫로그인일때 ....
+        // 첫로그인일때 .... (수정요소) -> 현재 saved이게 각 회원마다 만들어지는지 아니면 공통으로 만들어지는지를 인지하고 파악필요
         if (accessTokenResponse == null && refreshTokenResponse == null) {
             UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
             return authenticationManager.authenticate(authentication);

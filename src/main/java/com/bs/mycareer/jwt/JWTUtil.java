@@ -10,6 +10,8 @@ import com.auth0.jwt.interfaces.JWTVerifier;
 import com.bs.mycareer.User.dto.AccessTokenResponse;
 import com.bs.mycareer.User.dto.BSUserDetail;
 import io.jsonwebtoken.Claims;
+
+import com.bs.mycareer.exceptions.CustomException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +25,8 @@ import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+
+import static com.bs.mycareer.exceptions.ResponseCode.*;
 
 
 @Component //jwt 0.12.3 버전 사용 (타 블로그: 0.11.5)
@@ -91,7 +95,7 @@ public class JWTUtil {
                     .build()
                     .verify(token);
         }
-        throw new IllegalArgumentException("Invalid token");
+        throw new CustomException(INVALID_TOKEN);
     }
 
 
@@ -102,8 +106,9 @@ public class JWTUtil {
                     .withSubject("ACCESS_TOKEN")
                     .build();
             return verifier.verify(token);
-        } catch (JWTVerificationException exception) {
-            throw new IllegalStateException("Invalid token");
+        } catch (JWTVerificationException exception){
+            System.out.println(exception.getMessage());
+            throw new CustomException(INVALID_TOKEN);
         }
     }
 
@@ -116,7 +121,7 @@ public class JWTUtil {
                     .build();
             return verifier.verify(token);
         } catch (JWTVerificationException exception) {
-            throw new IllegalStateException("Invalid token");
+            throw new CustomException(INVALID_TOKEN);
         }
     }
     //Optional<UserRefreshToken> refreshToken = tokenRepository.findById(decodedJWT.getClaim("id").asString());
@@ -140,10 +145,12 @@ public class JWTUtil {
         DecodedJWT jwt;
         try {
             jwt = JWT.decode(token);
+            System.out.println("jwt = " + jwt);
         } catch (JWTDecodeException e) {
-            throw new IllegalArgumentException("Invalid token", e);
+            throw  new CustomException(INVALID_TOKEN);
         }
         String subject = jwt.getSubject();
+        System.out.println("subject = " + subject);
         return subject != null && subject.trim().equals("ACCESS_TOKEN");
     }
 
@@ -156,7 +163,7 @@ public class JWTUtil {
         try {
             jwt = JWT.decode(token);
         } catch (JWTDecodeException e) {
-            throw new IllegalArgumentException("Invalid token", e);
+            throw  new CustomException(INVALID_TOKEN);
         }
         String subject = jwt.getSubject();
         return subject != null && subject.trim().equals("REFRESH_TOKEN");

@@ -2,6 +2,8 @@ package com.bs.mycareer.User.controller;
 
 import com.bs.mycareer.User.dto.RegisterRequest;
 import com.bs.mycareer.User.service.UserService;
+import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.exceptions.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,9 +31,11 @@ public class UserController {
     public ResponseEntity<String> register(@RequestBody RegisterRequest registerRequest) {
         try {
             userService.registerProcess(registerRequest);
-            return ResponseEntity.ok("Registration successful");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+            return ResponseEntity.status(HttpStatus.OK)
+                    .body(ResponseCode.SUCCESS_SIGNUP.getDetail());
+        }catch (CustomException e) {
+            // CustomException이 발생하면 해당 예외의 상세 메시지를 클라이언트에게 전달
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
 
