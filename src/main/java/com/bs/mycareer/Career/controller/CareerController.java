@@ -11,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 
-
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,8 +24,8 @@ import static com.bs.mycareer.exceptions.ResponseCode.*;
 public class CareerController {
 
     @Autowired
-    //자동으로 bean 등록?
     private final CareerService careerService;
+
 
     //커리어 작성
     @Transactional
@@ -35,11 +34,11 @@ public class CareerController {
         // 게시글 유효성 검증 (빈칸 없게끔)
         String title = careerDto.getTitle();
         String content = careerDto.getContent();
-        if (title.trim().equals("")) {
+        if (title.trim().isEmpty()) {
             throw new CustomException(INVALID_CAREER_TITLE);
         }
 
-        if (content.trim().equals("")) {
+        if (content.trim().isEmpty()) {
             throw new CustomException(INVALID_CONTENT);
         }
         careerService.createCareer(title, content, httpServletRequest);
@@ -57,13 +56,13 @@ public class CareerController {
 
     //id별 조회
     @GetMapping("career/{id}")
-    public CareerDto getCareerById(@PathVariable Long id) {
+    public CareerDto getCareerById(@PathVariable(name= "id") Long id) {
         return careerService.getCareerById(id);
     }
 
     //커리어 수정
     @PutMapping("/career/{id}")
-    public ResponseEntity<ServerResponse> editCareer(@PathVariable Long id, @RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ServerResponse> editCareer(@PathVariable(name= "id") Long id, @RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
 
         careerService.editCareer(id, careerDto, httpServletRequest);
         return ServerResponse.toResponseEntity(SUCCESS_EDIT);
@@ -71,7 +70,7 @@ public class CareerController {
 
     //커리어 삭제
     @DeleteMapping("/career/{id}")
-    public ResponseEntity<ServerResponse> deleteCareer(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+    public ResponseEntity<ServerResponse> deleteCareer(@PathVariable(name= "id") Long id, HttpServletRequest httpServletRequest) {
         careerService.deleteCareer(id, httpServletRequest);
         return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }

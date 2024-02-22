@@ -7,11 +7,9 @@ import com.bs.mycareer.exceptions.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
 
 
 @RestController
@@ -21,11 +19,9 @@ public class UserController {
     @Autowired
     private final UserService userService;
 
-    private AuthenticationManager authenticationManager;
 
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager) {
-        this.authenticationManager = authenticationManager;
+    public UserController(UserService userService) {
         this.userService = userService;
     }
 
@@ -42,6 +38,18 @@ public class UserController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }
     }
+
+//    @PostMapping("/logout")
+//    public ResponseEntity<String> logout(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) {
+//        try {
+//            userService.logoutProcess(httpServletRequest,httpServletResponse);
+//            return ResponseEntity.ok("Logout successful");
+//        } catch (RuntimeException e) {
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(e.getMessage());
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 }
 
 //    @PostMapping()

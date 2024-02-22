@@ -7,15 +7,14 @@ import com.bs.mycareer.Career.repository.CareerContentRepository;
 import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
-import com.bs.mycareer.exceptions.CustomException;
 import com.bs.mycareer.User.service.BSUserDetailsService;
+import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.jwt.JWTProperties;
 import com.bs.mycareer.jwt.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,6 +37,9 @@ public class CareerServiceImpl implements CareerService {
 
     @Autowired
     private final JWTUtil jwtUtil;
+
+    @Autowired
+    final JWTProperties jwtProperties;
 
     @Autowired
     private final BSUserDetailsService bsUserDetailsService;
@@ -171,12 +173,15 @@ public class CareerServiceImpl implements CareerService {
         return bsUserDetail.getUser();
     }
 
+
+    // 메소드를 나눈건 좋은거라 나중에 jwtutil로 옮겨서 이작업을 추후에 할것!
     private String extractTokenFromHeader(String authorizationHeader) {
         if (authorizationHeader != null && authorizationHeader.startsWith("Bearer ")) {
             return jwtUtil.removePrefix(authorizationHeader);
         }
         throw new IllegalArgumentException("Invalid or missing Authorization header"); //여긴 굳이 customException 할필요 없을듯 반복사용안할거같아서
     }
+
 
     private void validateAccessToken(String token) {
         if (!jwtUtil.isAccessToken(token)) {

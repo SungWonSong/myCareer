@@ -3,7 +3,6 @@ package com.bs.mycareer.Career.entity;
 
 import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.User.entity.User;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;

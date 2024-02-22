@@ -1,8 +1,7 @@
 package com.bs.mycareer.Career.service;
 
-import com.bs.mycareer.Career.entity.Career;
 import com.bs.mycareer.Career.dto.CareerDto;
-import com.bs.mycareer.User.entity.User;
+import com.bs.mycareer.Career.entity.Career;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.util.List;
@@ -11,7 +10,6 @@ public interface CareerService {
 
     //커리어 작성
     Career createCareer(String title, String content, HttpServletRequest httpServletRequest );
-
 
     //커리어 아이디별 조회
     CareerDto getCareerById(Long id);

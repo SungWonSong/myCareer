@@ -7,13 +7,23 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
-import com.bs.mycareer.User.dto.AuthenticationResponse;
+import com.bs.mycareer.User.dto.AccessTokenResponse;
 import com.bs.mycareer.User.dto.BSUserDetail;
+import io.jsonwebtoken.Claims;
+
 import com.bs.mycareer.exceptions.CustomException;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 import static com.bs.mycareer.exceptions.ResponseCode.*;
@@ -28,12 +38,8 @@ public class JWTUtil {
     @Autowired
     private final JWTProperties jwTproperties;
 
-    @Autowired
-    private final AuthenticationResponse authenticationResponse;
-
-    public JWTUtil(JWTProperties jwTproperties, AuthenticationResponse authenticationResponse) {
+    public JWTUtil(JWTProperties jwTproperties) {
         this.jwTproperties = jwTproperties;
-        this.authenticationResponse = authenticationResponse;
     }
 
     // Access_token 생성 로직 ( 생성자를 넣어줘서 verify때 검증하면 좀더 높게 평가 )
@@ -99,7 +105,6 @@ public class JWTUtil {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded()))
                     .withSubject("ACCESS_TOKEN")
                     .build();
-
             return verifier.verify(token);
         } catch (JWTVerificationException exception){
             System.out.println(exception.getMessage());
@@ -164,11 +169,45 @@ public class JWTUtil {
         return subject != null && subject.trim().equals("REFRESH_TOKEN");
     }
 
-    void destroyAccessToken(AuthenticationResponse authenticationResponse) {
-        if (authenticationResponse != null) {
-            authenticationResponse.accessToken(null);
+    public Boolean validateAccessToken(String token) {
+        String accessSecretKey = String.valueOf(jwTproperties.getAccessSecretKey());
+        SecretKey accesssecretKey = new SecretKeySpec(accessSecretKey.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+        try {
+            Claims claims = Jwts.parser().setSigningKey(accesssecretKey).build().parseClaimsJws(token).getBody();
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
         }
     }
+
+
+    public Boolean validateRefreshToken(String token) {
+        String refreshSecretKey = String.valueOf(jwTproperties.getRefreshSecretKey());
+        SecretKey refreshsecretKey = new SecretKeySpec(refreshSecretKey.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
+        try {
+            Claims claims = Jwts.parser().setSigningKey(refreshsecretKey).build().parseClaimsJws(token).getBody();
+            return !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+
+
+    public void destroyAccessToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
+        HttpSession session = httpServletRequest.getSession(false);
+        AccessTokenResponse savedAccessToken = (AccessTokenResponse) httpServletRequest.getSession().getAttribute("savedAccessToken");
+
+        if(savedAccessToken != null){
+            savedAccessToken = null;
+            session.setAttribute("savedAccessToken", null);
+            session.removeAttribute("savedAccessToken");
+        }
+
+        httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login");
+
+    }
+
 }
 
 //        - claim("role",bsUserDetail.getAuthorities().iterator().next()) 이걸로 대체
@@ -215,14 +254,7 @@ public class JWTUtil {
 //    }
 //
 //    // 토큰의 유효성 + 만료일자 확인
-//    public boolean validateToken(String jwtToken) {
-//        try {
-//            Jws<Claims> claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(jwtToken);
-//            return !claims.getBody().getExpiration().before(new Date());
-//        } catch (Exception e) {
-//            return false;
-//        }
-//    }
+//
 //}
 // 블로그에 하나의 코드 설명 작성(보고이해바람), 메서드 체인 방식 이용 : 메서드 연쇄적 호출하여 간결하고 가독성이 좋은 코드 작성
 //    public String getSubject(String token) {
