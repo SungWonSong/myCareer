@@ -13,12 +13,8 @@ import java.util.Optional;
 
 public interface CareerContentRepository extends JpaRepository<Career, Integer> {
 
-    void deleteById(Long id);
     List<Career> findAllByAvailableTrue(Sort sort); //전체 글 조회
     Optional<Career> findCareerById(Long id); //id 별 글 조회
-
-
-//    Career updateCareer(Long id, CareerDto careerDto);
 
 }
 

@@ -10,13 +10,10 @@ import java.util.List;
 public interface CareerService {
 
     //커리어 작성
-//<<<<<<< HEAD
     Career createCareer(String title, String content, HttpServletRequest httpServletRequest );
-//=======
-//    Career createCareer(CareerDto careerDto, HttpServletRequest httpServletRequest);
-//>>>>>>> a08333bbb122d5deb66a88d7f0c4245e3e54d052
 
 
+    //커리어 아이디별 조회
     CareerDto getCareerById(Long id);
 
     List<CareerDto> getAllCareers();
