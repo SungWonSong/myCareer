@@ -1,12 +1,16 @@
 package com.bs.mycareer.Career.service;
 
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.Career.entity.Career;
 import com.bs.mycareer.Career.repository.CareerContentRepository;
-import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
 import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.User.service.BSUserDetailsService;
+import com.bs.mycareer.jwt.JWTUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -32,35 +36,81 @@ public class CareerServiceImpl implements CareerService {
     @Autowired
     private final UserRepository userRepository;
 
+    @Autowired
+    private final JWTUtil jwtUtil;
+
+    @Autowired
+    private final BSUserDetailsService bsUserDetailsService;
+
 
     //커리어 작성
     @Override
     @Transactional
-    public Career createCareer(String title, String content, User author) {
-        Career career = new Career(title, content, author);
-
-//        // 현재 사용자 정보 가져오기
-//        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+//<<<<<<< HEAD
+//    public Career createCareer(String title, String content, User author) {
+//        Career career = new Career(title, content, author);
 //
-//        if (principal instanceof UserDetails) {
-//            UserDetails userDetails = (UserDetails) principal;
-//            User user = ((BSUserDetail) userDetails).getUser();
-//
-//            career.setUser(user);
+////        // 현재 사용자 정보 가져오기
+////        Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 ////
-////            // 사용자의 경력 목록에 추가
-//            user.getCareers().add(career);
+////        if (principal instanceof UserDetails) {
+////            UserDetails userDetails = (UserDetails) principal;
+////            User user = ((BSUserDetail) userDetails).getUser();
+////
+////            career.setUser(user);
+//////
+//////            // 사용자의 경력 목록에 추가
+////            user.getCareers().add(career);
+//
+//        // 커리어 저장
+//        careerContentRepository.save(career);
+////            userRepository.save(user);
+//
+//        return career;
+////        } else {
+////            // principal이 UserDetails가 아닌 경우 예외 처리 또는 적절한 로직 추가
+////            throw new IllegalStateException("Current user is not an instance of UserDetails");
+////        }
+//=======
+    public Career createCareer(CareerDto careerDto, HttpServletRequest httpServletRequest) {
+        String token = httpServletRequest.getHeader("Authorization");
 
-        // 커리어 저장
-        careerContentRepository.save(career);
-//            userRepository.save(user);
+        if (token.contains("Bearer ")) {
+            token = jwtUtil.removePrefix(token);
+        }
 
-        return career;
-//        } else {
-//            // principal이 UserDetails가 아닌 경우 예외 처리 또는 적절한 로직 추가
-//            throw new IllegalStateException("Current user is not an instance of UserDetails");
-//        }
+        if (!jwtUtil.isAccessToken((token))) {
+            throw new IllegalArgumentException("INVALID ACCESS TOKEN");
+        }
+
+        BSUserDetail bsUserDetail = null;
+        try {
+            DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
+            String email = decodedJWT.getClaim("email").asString();
+            bsUserDetail = bsUserDetailsService.loadUserByUsername(email);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Failed to retrieve user details");
+        }
+
+//        User user = bsUserDetail.getUser();
+//        // 현재 사용자 정보 가져오기
+//
+//        Career career = new Career();
+//        career.setTitle(careerDto.getTitle());
+//        career.setContents(careerDto.getContents());
+//        career.setUser(user);
+//        // 사용자의 경력 목록에 추가
+//        user.getCareers().add(career);
+//        // 커리어 저장
+//        careerContentRepository.save(career);
+//        userRepository.save(user);
+//
+//        return career;
+        return null;
+//>>>>>>> a08333bbb122d5deb66a88d7f0c4245e3e54d052
     }
+
+
 
     //커리어 id별 조회
     @Override

@@ -1,18 +1,20 @@
 package com.bs.mycareer.Career.controller;
 
+import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.Career.entity.Career;
 import com.bs.mycareer.Career.repository.CareerContentRepository;
-import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.Career.service.CareerService;
 import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.exceptions.CustomException;
 import com.bs.mycareer.exceptions.ServerResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,22 +36,28 @@ public class CareerController {
     private final CareerContentRepository careerContentRepository;
 
     //커리어 작성
+    @Transactional
     @PostMapping("/career/create")
-    public ResponseEntity<ServerResponse> createCareer(@RequestBody CareerDto careerDto, Principal principal) {
-        // 게시글 유효성 검증 (빈칸 없게끔)
-        String title = careerDto.getTitle();
-        String content = careerDto.getContent();
-        if (title.trim().equals("")) {
-            throw new CustomException(INVALID_CAREER_TITLE);
-        }
+//<<<<<<< HEAD
+//    public ResponseEntity<ServerResponse> createCareer(@RequestBody CareerDto careerDto, Principal principal) {
+//        // 게시글 유효성 검증 (빈칸 없게끔)
+//        String title = careerDto.getTitle();
+//        String content = careerDto.getContent();
+//        if (title.trim().equals("")) {
+//            throw new CustomException(INVALID_CAREER_TITLE);
+//        }
+//
+//        if (content.trim().equals("")) {
+//            throw new CustomException(INVALID_CONTENT);
+//        }
+//        BSUserDetail bsUserDetails = (BSUserDetail) ((Authentication) principal).getPrincipal();
+//
+//        careerService.createCareer(title, content,  bsUserDetails.getUser());
+//        return ServerResponse.toResponseEntity(SUCCESS_CREATE);
+//=======
+    public Career createCareer(@RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
+        return careerService.createCareer(careerDto,httpServletRequest);
 
-        if (content.trim().equals("")) {
-            throw new CustomException(INVALID_CONTENT);
-        }
-        BSUserDetail bsUserDetails = (BSUserDetail) ((Authentication) principal).getPrincipal();
-
-        careerService.createCareer(title, content,  bsUserDetails.getUser());
-        return ServerResponse.toResponseEntity(SUCCESS_CREATE);
     }
 
 

@@ -1,6 +1,5 @@
 package com.bs.mycareer.jwt;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import com.bs.mycareer.User.dto.AuthenticationRequest;
 import com.bs.mycareer.User.dto.AuthenticationResponse;
 import com.bs.mycareer.User.dto.BSUserDetail;
@@ -9,14 +8,13 @@ import com.bs.mycareer.utils.JsonUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-
-import java.util.Optional;
 
 
 public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -42,22 +40,36 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
     // filter에서 로그인을 한다면 header에 json형식으로 Authorization(본문) 조작 - Javascript / fetch-api
     @Override
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws AuthenticationException {
-        AuthenticationRequest authenticationRequest = JsonUtil.readValue(httpServletRequest, AuthenticationRequest.class);
+        HttpSession session = httpServletRequest.getSession();
+        AuthenticationResponse authenticationResponse = (AuthenticationResponse) session.getAttribute("savedAccessToken");
 
-        //refresh 토큰이 null or 비어있을경우, 비인증 토큰으로 만들어서 인증을 보내서 -> success 로직 실행
-//        if (authenticationRequest.refreshToken() == null || authenticationRequest.refreshToken().isEmpty()) {
-            //UsernamePasswordAuthenticationToken 이거 Costom은 이번엔 하지 않는걸로....
+
+        // 첫 로그인 시도인 경우, 인증되지 않은 authenticationRequest를 authenticationManager로 전달하여 검증하고 success로직으로 넘깁니다.
+        if (authenticationResponse == null) {
+            AuthenticationRequest authenticationRequest = JsonUtil.readValue(httpServletRequest, AuthenticationRequest.class);
             UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
             return authenticationManager.authenticate(authentication);
+        } else {
+        // 두번째부터는 accesstoken 존재, 그냥 바로 header전송해서 success안가고 인가로 넘어감 (-> UserAuthorizationFilter)
+            String token = authenticationResponse.accessToken();
+            httpServletResponse.addHeader("Authorization", "Bearer " + token);
+            return null;
+        }
+    }
+        //refresh 토큰이 null or 비어있을경우, 비인증 토큰으로 만들어서 인증을 보내서 -> success 로직 실행
+//        if (authenticationRequest.refreshToken() == null || authenticationRequest.refreshToken().isEmpty()) {
+
+
 //        } else {   //refresh 토큰이 존재하고 검증되면 access 토큰 재발급
 //            Optional<DecodedJWT> verifyToken = jwtUtil.verifyRefreshToken(authenticationRequest.refreshToken());
 //            DecodedJWT decodedJWT = verifyToken.orElseThrow(() -> new IllegalArgumentException("INVALID TOKEN"));
 //            BSUserDetail bsUserDetail = (BSUserDetail) bsUserDetailsService.loadUserByUsername(decodedJWT.getClaim("email").asString());
 //            return UsernamePasswordAuthenticationToken.authenticated(bsUserDetail, null, bsUserDetail.getAuthorities());
 //        }
-    }
+
 
     //로그인 성공시 자동 실행되는 메소드 (여기서 access,refresh 토큰 발행), userdetail를 넣는이유 : chatgpt마지막 작성... 토대로 이해하기
+
     @Override
     protected void successfulAuthentication(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse, FilterChain chain, Authentication authentication) {
         BSUserDetail bsUserDetail = (BSUserDetail) authentication.getPrincipal();
@@ -65,12 +77,22 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         String accessToken = jwtUtil.generateAccessToken(bsUserDetail);
         String refreshToken = jwtUtil.generateRefreshToken(bsUserDetail);
 
-        AuthenticationResponse authenticationResponse = new AuthenticationResponse().accessToken(accessToken).refreshToken(refreshToken);
-        // refresh token은 redis에 저장 / accesstoken은 header에 담아서 반환해서 저장 x
-        httpServletResponse.addHeader("Authorization", "Bearer " + accessToken);
+        HttpSession session = httpServletRequest.getSession();
 
+            if (session.getAttribute("savedAccessToken") == null) {
+                AuthenticationResponse savedAccessTokenNew = new AuthenticationResponse().accessToken(accessToken);
+                session.setAttribute("savedAccessToken", savedAccessTokenNew);
+
+            } else if (session.getAttribute("savedAccessToken") != null) {
+                AuthenticationResponse savedAccessToken = (AuthenticationResponse) session.getAttribute("savedAccessToken");
+                if (savedAccessToken.accessToken() == null) {
+                    savedAccessToken.accessToken(accessToken);
+                }
+
+            // 여기에 redis에 refreshtoken 담는 로직 생성
+            httpServletResponse.addHeader("Authorization", "Bearer " + accessToken);
+        }
     }
-
 
     //로그인 실패시 실행하는 메소드
     @Override

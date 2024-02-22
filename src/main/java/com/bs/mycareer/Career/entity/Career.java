@@ -4,6 +4,7 @@ package com.bs.mycareer.Career.entity;
 import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.User.entity.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -14,7 +15,13 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
+
 public class Career {
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonBackReference
+    private User user;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

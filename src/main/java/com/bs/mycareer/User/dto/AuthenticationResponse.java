@@ -19,7 +19,6 @@ public class AuthenticationResponse implements Serializable {
     private static final long serialVersionUID = 9181222863315822243L;
 
     private String accessToken;
-    private String refreshToken;
 
 
 }
