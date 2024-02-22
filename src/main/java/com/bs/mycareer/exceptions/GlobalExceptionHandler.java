@@ -19,7 +19,7 @@ public class GlobalExceptionHandler {
         return ServerResponse.toResponseEntity(e.getErrorCode());
     }
 
-    //DB관련 부분 예외처리
+    //DB데이터 관련 부분 처리
     @ExceptionHandler(value = { ConstraintViolationException.class, DataIntegrityViolationException.class})
     protected ResponseEntity<ServerResponse> handleDataException() {
         log.error("handleDataException throw Exception : {}", DUPLICATE_RESOURCE);

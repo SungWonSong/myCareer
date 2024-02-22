@@ -52,8 +52,7 @@ public class JWTUtil {
     public String createAccessToken(BSUserDetail bsUserDetail) {
         Date date = new Date();
 
-        return Jwts.builder()
-                .claim("subject", "ACCESS_TOKEN")
+        return Jwts.builder().subject("ACCESS_TOKEN")
                 .claim("email", bsUserDetail.getUser().getEmail())
                 .claim("authority", bsUserDetail.getAuthorities())
                 .issuedAt(date)
@@ -108,10 +107,11 @@ public class JWTUtil {
     public DecodedJWT verifyAccessToken(String token) {
         try {
             JWTVerifier verifier = JWT.require(Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded()))
-                    .withClaim("subject", "ACCESS_TOKEN")
+                    .withSubject("ACCESS_TOKEN")
                     .build();
             return verifier.verify(token);
         } catch (JWTVerificationException exception){
+            System.out.println(exception.getMessage());
             throw new IllegalStateException("Invalid token");
         }
     }
@@ -145,10 +145,12 @@ public class JWTUtil {
         DecodedJWT jwt;
         try {
             jwt = JWT.decode(token);
+            System.out.println("jwt = " + jwt);
         } catch (JWTDecodeException e) {
             throw new IllegalArgumentException("Invalid token", e);
         }
         String subject = jwt.getSubject();
+        System.out.println("subject = " + subject);
         return subject != null && subject.trim().equals("ACCESS_TOKEN");
     }
 

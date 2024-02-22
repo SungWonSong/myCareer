@@ -18,7 +18,7 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
-    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Career> careers = new ArrayList<>();
 
 
@@ -47,8 +47,8 @@ public class User {
     }
 
 
-    public void addCareer(Career career) {
-        careers.add(career);
-        career.setUser(this);
-    }
+//    public void addCareer(Career career) {
+//        careers.add(career);
+//        career.setUser(this);
+//    }
 }

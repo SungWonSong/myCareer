@@ -3,6 +3,7 @@ package com.bs.mycareer.Career.entity;
 
 import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.User.entity.User;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -15,18 +16,17 @@ import lombok.Setter;
 @NoArgsConstructor
 public class Career {
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String title;
 
-//    @Column(columnDefinition = "TEXT")
-    private String contents;
+    private String content;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    @JsonIgnore
+    private User author;
 
 
     //실제 db에서 삭제하는 것이 아니라 보이지만 않게끔 하려고 씀! => 실제 db에서
@@ -35,15 +35,22 @@ public class Career {
 
     public Career(CareerDto careerDto, User user) {
         this.title = careerDto.getTitle();
-        this.contents = careerDto.getContents();
-        this.user = user;
+        this.content = careerDto.getContent();
+        this.author = user;
+        this.available = true;
 
     }
 
-    public Career(String title, String contents, boolean available) {
+    public Career(String title, String content, User author) {
         this.title = title;
-        this.contents = contents;
-        this.available = isAvailable();
+        this.content = content;
+        this.author = author;
+        this.available = true;
+    }
+
+    public void edit(String title, String content) {
+        this.title = title;
+        this.content = content;
     }
 
     public void delete() {
@@ -51,4 +58,6 @@ public class Career {
     }
 
 
+    public void setUser(User user) {
+    }
 }

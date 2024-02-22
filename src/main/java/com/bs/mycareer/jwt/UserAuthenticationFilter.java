@@ -45,16 +45,16 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         AuthenticationRequest authenticationRequest = JsonUtil.readValue(httpServletRequest, AuthenticationRequest.class);
 
         //refresh 토큰이 null or 비어있을경우, 비인증 토큰으로 만들어서 인증을 보내서 -> success 로직 실행
-        if (authenticationRequest.refreshToken() == null || authenticationRequest.refreshToken().isEmpty()) {
+//        if (authenticationRequest.refreshToken() == null || authenticationRequest.refreshToken().isEmpty()) {
             //UsernamePasswordAuthenticationToken 이거 Costom은 이번엔 하지 않는걸로....
             UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
             return authenticationManager.authenticate(authentication);
-        } else {   //refresh 토큰이 존재하고 검증되면 access 토큰 재발급
-            Optional<DecodedJWT> verifyToken = jwtUtil.verifyRefreshToken(authenticationRequest.refreshToken());
-            DecodedJWT decodedJWT = verifyToken.orElseThrow(() -> new IllegalArgumentException("INVALID TOKEN"));
-            BSUserDetail bsUserDetail = (BSUserDetail) bsUserDetailsService.loadUserByUsername(decodedJWT.getClaim("email").asString());
-            return UsernamePasswordAuthenticationToken.authenticated(bsUserDetail, null, bsUserDetail.getAuthorities());
-        }
+//        } else {   //refresh 토큰이 존재하고 검증되면 access 토큰 재발급
+//            Optional<DecodedJWT> verifyToken = jwtUtil.verifyRefreshToken(authenticationRequest.refreshToken());
+//            DecodedJWT decodedJWT = verifyToken.orElseThrow(() -> new IllegalArgumentException("INVALID TOKEN"));
+//            BSUserDetail bsUserDetail = (BSUserDetail) bsUserDetailsService.loadUserByUsername(decodedJWT.getClaim("email").asString());
+//            return UsernamePasswordAuthenticationToken.authenticated(bsUserDetail, null, bsUserDetail.getAuthorities());
+//        }
     }
 
     //로그인 성공시 자동 실행되는 메소드 (여기서 access,refresh 토큰 발행), userdetail를 넣는이유 : chatgpt마지막 작성... 토대로 이해하기

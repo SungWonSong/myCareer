@@ -3,6 +3,8 @@ package com.bs.mycareer.User.service;
 import com.bs.mycareer.User.dto.RegisterRequest;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
+import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.exceptions.ResponseCode;
 import com.bs.mycareer.utils.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
+
+import static com.bs.mycareer.exceptions.ResponseCode.*;
 
 //예외처리는 추후에 따로 모아서 진행할 예정....
 @Service
@@ -38,24 +42,30 @@ public class UserServiceImpl implements UserService{
 
         String email = registerRequest.getEmail();
 
-
+        //이메일형식 안맞을때
         if (!UserValidator.isValidEmail(email)) {
-            throw new IllegalArgumentException("이메일 형식이 올바르지 않습니다.");
+            throw new CustomException(INVALID_EMAIL_PATTERN);
         }
 
         String password = registerRequest.getPassword();
 
+        //비번 형식 안맞을때
         if (!UserValidator.isValidPassword(password)) {
-            throw new IllegalArgumentException("비밀번호 형식이 올바르지 않습니다.");
+            throw new CustomException(INVALID_PASSWORD_PATTERN);
         }
 
-        if(email == null || password == null) {
-            throw new IllegalArgumentException("이메일 또는 비밀번호가 null입니다.");
+        //이메일 비번이 Null인 경우...
+        if(email == null) {
+            throw new CustomException(INVALID_SIGN_IN_EMAIL);
+        }
+        if(password == null) {
+            throw new CustomException(INVALID_SIGN_IN_PASSWORD);
         }
 
+        //중복회원이 있을 경우
         Optional<User> existingUser = userRepository.findByEmail(email);
         if (existingUser.isPresent()) {
-            throw new RuntimeException("중복된 이메일입니다.");
+            throw new CustomException(DUPLICATE_USER);
         }
 
         String encodedPassword = bCryptPasswordEncoder.encode(password);

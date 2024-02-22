@@ -33,25 +33,25 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = httpServletRequest.getHeader("Authorization");
-
+        System.out.println("token 요기요기= " + token);
         if (token == null || !jwtUtil.isStartWithPrefix(token)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
 
         if (token.contains("Bearer ")) {
-            jwtUtil.removePrefix(token);
+            token = jwtUtil.removePrefix(token);
         }
 
         DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
-
         if (!jwtUtil.isAccessToken(token)) {
             throw new IllegalArgumentException("INVALID ACCESS TOKEN");
         }
 
-        String email = decodedJWT.getClaim(token).asString();
+        String email = decodedJWT.getClaim("email").asString();
         BSUserDetail bsUserDetail = (BSUserDetail) bsUserDetailsService.loadUserByUsername(email);
         UsernamePasswordAuthenticationToken authenticated = UsernamePasswordAuthenticationToken.authenticated(bsUserDetail, null, bsUserDetail.getAuthorities());
+//        jwtUtil.isStartWithPrefix(String.valueOf(authenticated));
         SecurityContextHolder.getContext().setAuthentication(authenticated);
 
         filterChain.doFilter(httpServletRequest, httpServletResponse);

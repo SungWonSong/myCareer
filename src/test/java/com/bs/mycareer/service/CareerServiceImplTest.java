@@ -15,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 
 import java.util.List;
@@ -57,7 +59,7 @@ class CareerServiceImplTest {
         Career career = careerService.createCareer(careerDto);
         //then
         assertEquals(careerDto.getTitle(), career.getTitle());
-        assertEquals(careerDto.getContents(), career.getContents());
+        assertEquals(careerDto.getContent(), career.getContents());
         assertEquals(career.getUser().getUser_id(), bsUserDetail.getUser().getUser_id());
 
         // 로그 출력
@@ -87,7 +89,7 @@ class CareerServiceImplTest {
         //isEqualToComparingFieldByField는 두 객체를 필드별로 비교하는 메서드!
         assertThat(careerDto).isEqualToComparingFieldByField(new CareerDto("보아 이력서!!", "저는 열심히 할수있습니다.",true));
         logger.info("careerDto.getTitle() = {}", careerDto.getTitle());
-        logger.info("careerDto.getContents() = {}", careerDto.getContents());
+        logger.info("careerDto.getContents() = {}", careerDto.getContent());
     }
 
     @Test
