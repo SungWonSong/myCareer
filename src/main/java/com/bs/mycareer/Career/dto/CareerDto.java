@@ -12,6 +12,7 @@ public class CareerDto {
     private String title;
     private String content;
     private boolean available;
+
     public CareerDto() {
         // 기본 생성자
     }

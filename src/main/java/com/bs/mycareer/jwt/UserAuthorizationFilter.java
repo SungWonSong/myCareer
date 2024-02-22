@@ -1,6 +1,5 @@
 package com.bs.mycareer.jwt;
 
-import com.auth0.jwt.interfaces.DecodedJWT;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -16,9 +15,6 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private final JWTUtil jwtUtil;
 
-//    @Autowired
-//    private final BSUserDetailsService bsUserDetailsService;
-
 
     public UserAuthorizationFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -28,21 +24,22 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = httpServletRequest.getHeader("Authorization");
-        System.out.println("token 요기요기= " + token);
-        if (token == null || !jwtUtil.isStartWithPrefix(token)) {
-            filterChain.doFilter(httpServletRequest, httpServletResponse);
-            return;
-        }
 
-        if (token.contains("Bearer ")) {
+        
+        if ((token != null) && (jwtUtil.isStartWithPrefix(token))) {
             token = jwtUtil.removePrefix(token);
         }
 
-        DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
+        // validate안하면 로그인페이지로 넘겨줘야된다... (수정필요)
+        if (!jwtUtil.validateAccessToken(token)) {
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
+            return;
 
+        } else {
+            httpServletResponse.addHeader("Authorization", "Bearer " + token);
+            filterChain.doFilter(httpServletRequest, httpServletResponse);
 
-        httpServletResponse.addHeader("Authorization", "Bearer " + decodedJWT);
-        filterChain.doFilter(httpServletRequest, httpServletResponse);
+        }
     }
 }
 //        # 이부분은 인증객체를 넘겨줘서 가져올때 사용하는 부분('세션')

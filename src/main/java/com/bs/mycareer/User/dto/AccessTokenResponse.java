@@ -13,12 +13,16 @@ import java.io.Serializable;
 @Getter @Setter
 @Accessors(chain = true, fluent = true)
 @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
-public class AuthenticationResponse implements Serializable {
+public class AccessTokenResponse implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 9181222863315822243L;
 
     private String accessToken;
+    private String refreshtoken;
 
 
-}
+
+    }
+
+
