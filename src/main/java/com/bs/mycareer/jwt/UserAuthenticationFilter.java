@@ -43,6 +43,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         HttpSession session = httpServletRequest.getSession();
         AuthenticationResponse authenticationResponse = (AuthenticationResponse) session.getAttribute("savedAccessToken");
 
+
         // 첫 로그인 시도인 경우, 인증되지 않은 authenticationRequest를 authenticationManager로 전달하여 검증하고 success로직으로 넘깁니다.
         if (authenticationResponse == null) {
             AuthenticationRequest authenticationRequest = JsonUtil.readValue(httpServletRequest, AuthenticationRequest.class);

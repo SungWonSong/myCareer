@@ -4,75 +4,100 @@ import com.bs.mycareer.Career.dto.CareerDto;
 import com.bs.mycareer.Career.entity.Career;
 import com.bs.mycareer.Career.repository.CareerContentRepository;
 import com.bs.mycareer.Career.service.CareerService;
+import com.bs.mycareer.User.dto.BSUserDetail;
+import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.exceptions.ServerResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.AccessDeniedException;
+import java.security.Principal;
 import java.util.List;
+
+import static com.bs.mycareer.exceptions.ResponseCode.*;
 
 // 말 그대로 controller
 @RequiredArgsConstructor
 @RestController
 public class CareerController {
 
-    @Autowired //자동으로 bean 등록?
-    private CareerService careerService;
+    //자동으로 bean 등록?
+    private final CareerService careerService;
 
     @Autowired
     private final CareerContentRepository careerContentRepository;
 
-    //Career를 List<Career>에 추가한다.
-//    @PostMapping("/career")
-//        public List<Career> postCareers() {
-//            List<Career> careers = new ArrayList<>();
-//            Career career = new Career();
-//            careers.add(career);
-//            return careers;
-//
-//        }
     //커리어 작성
     @Transactional
     @PostMapping("/career/create")
-    public Career createCareer(@RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
-        return careerService.createCareer(careerDto,httpServletRequest);
+//<<<<<<< HEAD
+//    public ResponseEntity<ServerResponse> createCareer(@RequestBody CareerDto careerDto, Principal principal) {
+//        // 게시글 유효성 검증 (빈칸 없게끔)
+//        String title = careerDto.getTitle();
+//        String content = careerDto.getContent();
+//        if (title.trim().equals("")) {
+//            throw new CustomException(INVALID_CAREER_TITLE);
+//        }
+//
+//        if (content.trim().equals("")) {
+//            throw new CustomException(INVALID_CONTENT);
+//        }
+//        BSUserDetail bsUserDetails = (BSUserDetail) ((Authentication) principal).getPrincipal();
+//
+//        careerService.createCareer(title, content,  bsUserDetails.getUser());
+//        return ServerResponse.toResponseEntity(SUCCESS_CREATE);
+//=======
+    public ResponseEntity<ServerResponse> createCareer(@RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
+        // 게시글 유효성 검증 (빈칸 없게끔)
+        String title = careerDto.getTitle();
+        String content = careerDto.getContent();
+        if (title.trim().equals("")) {
+            throw new CustomException(INVALID_CAREER_TITLE);
+        }
+
+        if (content.trim().equals("")) {
+            throw new CustomException(INVALID_CONTENT);
+        }
+        careerService.createCareer(title, content, httpServletRequest);
+        return ServerResponse.toResponseEntity(SUCCESS_CREATE);
+
     }
 
 
     //전체 조회
-
     @GetMapping("career/ContentLists")
     public List<CareerDto> getAllCareers() {
         return careerService.getAllCareers();
     }
 
-    //id별 조회
 
+    //id별 조회
     @GetMapping("career/{id}")
     public CareerDto getCareerById(@PathVariable Long id) {
-        return careerService.getCareerById(id); // 존재하지 않을 경우 null 반환, 혹은 예외 처리 가능
+        return careerService.getCareerById(id);
     }
 
-
+    //커리어 수정
     @PutMapping("/career/{id}")
-    public ResponseEntity<Career> updateCareer(@PathVariable Long id, @RequestBody CareerDto careerDto) {
-        try {
-            Career updatedCareer = careerService.updateCareer(id, careerDto);
-            return ResponseEntity.ok(updatedCareer);
-        } catch (AccessDeniedException e) {
-            // AccessDeniedException에 대한 처리 로직
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+    public ResponseEntity<ServerResponse> editCareer(@PathVariable Long id, @RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
+
+        careerService.editCareer(id, careerDto, httpServletRequest);
+        return ServerResponse.toResponseEntity(SUCCESS_EDIT);
     }
 
-
+    //커리어 삭제
     @DeleteMapping("/career/{id}")
-    public void deleteCareer(@PathVariable Long id) {
-        careerService.deleteCareer(id);
+    public ResponseEntity<ServerResponse> deleteCareer(@PathVariable Long id, HttpServletRequest httpServletRequest) {
+        careerService.deleteCareer(id, httpServletRequest);
+        return ServerResponse.toResponseEntity(SUCCESS_DELETE);
     }
 
 

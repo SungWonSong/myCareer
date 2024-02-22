@@ -1,10 +1,12 @@
 package com.bs.mycareer.utils;
 
-import com.bs.mycareer.exceptions.CommonException;
+import com.bs.mycareer.exceptions.CustomException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
+
+import static com.bs.mycareer.exceptions.ResponseCode.*;
 
 public class JsonUtil {
 
@@ -14,7 +16,7 @@ public class JsonUtil {
         try {
             return mapper.readValue(request.getInputStream(), type);
         } catch (IOException e) {
-            throw new CommonException(e.getMessage(), e);
+            throw new CustomException(INTERNAL_SERVER_ERROR);
         }
     }
 }

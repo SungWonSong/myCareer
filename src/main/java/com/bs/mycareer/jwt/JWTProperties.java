@@ -11,7 +11,8 @@ import java.nio.charset.StandardCharsets;
 import java.security.Key;
 
 @Component
-//@ConfigurationProperties()
+//@ConfigurationProperties(prefix = "app.security.jwt")
+
 @Getter
 @Setter
 public class JWTProperties {
@@ -20,7 +21,6 @@ public class JWTProperties {
     private final String accessTokenSubject = "ACCESS_TOKEN";
     private final Key accessSecretKey;
     private final Key refreshSecretKey;
-
 
 
     public JWTProperties(@Value("${spring.jwt.accessSecret}") String accessSecret,

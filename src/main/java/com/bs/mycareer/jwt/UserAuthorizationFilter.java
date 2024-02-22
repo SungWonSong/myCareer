@@ -28,7 +28,7 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse,
                                     FilterChain filterChain) throws ServletException, IOException {
         String token = httpServletRequest.getHeader("Authorization");
-
+        System.out.println("token 요기요기= " + token);
         if (token == null || !jwtUtil.isStartWithPrefix(token)) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
@@ -39,6 +39,7 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
         }
 
         DecodedJWT decodedJWT = jwtUtil.verifyAccessToken(token);
+
 
         httpServletResponse.addHeader("Authorization", "Bearer " + decodedJWT);
         filterChain.doFilter(httpServletRequest, httpServletResponse);

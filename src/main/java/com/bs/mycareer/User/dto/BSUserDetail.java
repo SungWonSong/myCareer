@@ -24,6 +24,8 @@ public class BSUserDetail implements UserDetails {
         this.user = user;
     }
 
+    public User getUser() {return user;}
+
 
     //추가로 admin / user 추후에 나누어 적용
     // Collection 안에 ?는 권한이 어떤 타입인줄 모르기에 사용 // set형식이라서 중복이 안되기에 계속 덮어쓰기 개념으로 clear를 해줄필요 없음
@@ -40,9 +42,7 @@ public class BSUserDetail implements UserDetails {
 //        this.user.getRole().addAll(authoritiesSet);  // 새로운 권한 추가
 //    }
 
-    public User getUser(){
-        return user;
-    }
+
     @Override
         public String getUsername() {
 
