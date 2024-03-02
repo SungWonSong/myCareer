@@ -3,8 +3,8 @@ package com.bs.mycareer.User.service;
 import com.bs.mycareer.User.dto.RegisterRequest;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
-import com.bs.mycareer.jwt.JWTUtil;
-import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.Common.jwt.JWTUtil;
+import com.bs.mycareer.Common.exceptions.CustomException;
 import com.bs.mycareer.utils.UserValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -13,7 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-import static com.bs.mycareer.exceptions.ResponseCode.*;
+import static com.bs.mycareer.Common.exceptions.ResponseCode.*;
 
 //예외처리는 추후에 따로 모아서 진행할 예정....
 @Service
@@ -33,7 +33,7 @@ public class UserServiceImpl implements UserService {
     public UserServiceImpl(UserRepository userRepository, BCryptPasswordEncoder bCryptPasswordEncoder,JWTUtil jwtUtil) {
         this.userRepository = userRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
-        this.jwtUtil  = jwtUtil;
+        this.jwtUtil = jwtUtil;
     }
 
     @Override

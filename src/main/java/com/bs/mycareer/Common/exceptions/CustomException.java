@@ -1,4 +1,4 @@
-package com.bs.mycareer.exceptions;
+package com.bs.mycareer.Common.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

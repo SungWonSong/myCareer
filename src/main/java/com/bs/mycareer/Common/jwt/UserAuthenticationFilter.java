@@ -1,6 +1,7 @@
-package com.bs.mycareer.jwt;
+package com.bs.mycareer.Common.jwt;
 
 import com.auth0.jwt.interfaces.DecodedJWT;
+import com.bs.mycareer.Common.exceptions.CustomException;
 import com.bs.mycareer.User.dto.AccessTokenResponse;
 import com.bs.mycareer.User.dto.AuthenticationRequest;
 import com.bs.mycareer.User.dto.BSUserDetail;
@@ -13,13 +14,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationServiceException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
+
+import static com.bs.mycareer.Common.exceptions.ResponseCode.DUPLICATE_LOGIN;
 
 
 public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilter {
@@ -53,38 +55,65 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
         AccessTokenResponse accessTokenResponse = (AccessTokenResponse) session.getAttribute("savedAccessToken");
         RefreshTokenResponse refreshTokenResponse = (RefreshTokenResponse) session.getAttribute("savedRefreshToken");
 
-        // 첫로그인일때 .... (수정요소) -> 현재 saved이게 각 회원마다 만들어지는지 아니면 공통으로 만들어지는지를 인지하고 파악필요
-        if (accessTokenResponse == null && refreshTokenResponse == null) {
-            UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
-            return authenticationManager.authenticate(authentication);
-
-        } else if (refreshTokenResponse.refreshToken() == null || !jwtUtil.validateRefreshToken(refreshTokenResponse.refreshToken())) {
-            accessTokenResponse.accessToken(null);
-            refreshTokenResponse.refreshToken(null);
-            UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
-            return authenticationManager.authenticate(authentication);
-
-        } else if (accessTokenResponse.accessToken() == null && jwtUtil.validateAccessToken(refreshTokenResponse.refreshToken())){
-            BSUserDetail bsUserDetail = null;
-            try {
-                DecodedJWT decodedJWT = jwtUtil.verifyRefreshToken(refreshTokenResponse.refreshToken());
-                String email = decodedJWT.getClaim("email").asString();
-                bsUserDetail = bsUserDetailsService.loadUserByUsername(email);
-            } catch (Exception e) {
-                throw new IllegalArgumentException("Failed to retrieve user details");
-            }
-            String accessToken = jwtUtil.generateAccessToken(bsUserDetail);
-            accessTokenResponse.accessToken(accessToken);
-            httpServletResponse.addHeader("Authorization", "Bearer " + accessToken);
+        if (accessTokenResponse != null) {
+            throw new CustomException(DUPLICATE_LOGIN);
         } else {
-            String access = accessTokenResponse.accessToken();
-            httpServletResponse.addHeader("Authorization", "Bearer " + access);
+            // 첫번째 로그인일 경우
+            if (accessTokenResponse == null && refreshTokenResponse == null) {
+                UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
+                return authenticationManager.authenticate(authentication);
+
+                // refreshtoken값 = null or refreshtoken값 유효 x
+            } else if (refreshTokenResponse.refreshToken() == null || !jwtUtil.validateRefreshToken(refreshTokenResponse.refreshToken())) {
+                UsernamePasswordAuthenticationToken authentication = UsernamePasswordAuthenticationToken.unauthenticated(authenticationRequest.email(), authenticationRequest.password());
+                return authenticationManager.authenticate(authentication);
+
+                // accesstoken값 = null and refreshtoken값 유효 o (로그아웃 상태)
+            } else if (accessTokenResponse == null && jwtUtil.validateRefreshToken(refreshTokenResponse.refreshToken())) {
+                BSUserDetail bsUserDetail = null;
+                try {
+                    DecodedJWT decodedJWT = jwtUtil.verifyRefreshToken(refreshTokenResponse.refreshToken());
+                    String email = decodedJWT.getClaim("email").asString();
+                    bsUserDetail = bsUserDetailsService.loadUserByUsername(email);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Failed to retrieve user details", e);
+                }
+                String accessToken = jwtUtil.generateAccessToken(bsUserDetail);
+                accessTokenResponse = new AccessTokenResponse().accessToken(accessToken);
+                System.out.println("accessToken1 = " + accessToken);
+                session.setAttribute("savedAccessToken", accessTokenResponse);
+                httpServletResponse.addHeader("Authorization", "Bearer " + accessToken);
+                return null;
+
+                // accesstoken값 유효 x and refreshtoken값 유효 o (로그인 상태에서 로그아웃으로 보내기)
+            } else if (!jwtUtil.validateAccessToken(accessTokenResponse.accessToken()) && jwtUtil.validateRefreshToken(refreshTokenResponse.refreshToken())) {
+                BSUserDetail bsUserDetail = null;
+                try {
+                    DecodedJWT decodedJWT = jwtUtil.verifyRefreshToken(refreshTokenResponse.refreshToken());
+                    String email = decodedJWT.getClaim("email").asString();
+                    bsUserDetail = bsUserDetailsService.loadUserByUsername(email);
+                } catch (Exception e) {
+                    throw new IllegalArgumentException("Failed to retrieve user details");
+                }
+                String access = jwtUtil.generateAccessToken(bsUserDetail);
+                accessTokenResponse.accessToken(access);
+                session.setAttribute("savedAccessToken", accessTokenResponse);
+                httpServletResponse.addHeader("Authorization", "Bearer " + access);
+                return null;
+
+                // access && refresh 값이 둘다 존재할때 (거의 존재 x -> 로그아웃 필수)
+            } else if (accessTokenResponse.accessToken() != null && refreshTokenResponse.refreshToken() != null) {
+                String accessResponse = accessTokenResponse.accessToken();
+                session.setAttribute("savedAccessToken", accessTokenResponse);
+                httpServletResponse.addHeader("Authorization", "Bearer " + accessResponse);
+                return null;
+            } else {
+                String accessResponse = accessTokenResponse.accessToken();
+                httpServletResponse.addHeader("Authorization", "Bearer " + accessResponse);
+                return null;
+            }
         }
-        throw new AuthenticationServiceException("Authentication failed");
     }
-
-            // 첫로그인시 비인증객체를 넘겨서 successful 로직으로 넘어감
-
 
 //        } else {   //refresh 토큰이 존재하고 검증되면 access 토큰 재발급 ()
 //            Optional<DecodedJWT> verifyToken = jwtUtil.verifyRefreshToken(authenticationRequest.refreshToken());
@@ -105,29 +134,27 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 
         httpServletResponse.addHeader("Authorization", "Bearer " + accessToken);
 
-        //accesstoken, refreshtoken 객체로 만들어 저장
+
+        //accesstoken, refreshtoken 객체로 만들어 저장(불러오는 시기는 문제 x, 없으면 Null이니 확인필수)
         HttpSession session = httpServletRequest.getSession(false);
         
         if (session.getAttribute("savedAccessToken") == null) {
-            AccessTokenResponse savedAccessToken = new AccessTokenResponse();
-            savedAccessToken.accessToken(accessToken);
-            session.setAttribute("savedAccessToken", savedAccessToken);
-            JsonUtil.writeValue(httpServletResponse.getOutputStream(), savedAccessToken);
+            session.setAttribute("savedAccessToken", new AccessTokenResponse().accessToken(accessToken));
+            JsonUtil.writeValue(httpServletResponse.getOutputStream(), session.getAttribute("savedAccessToken"));
 
         } else if (session.getAttribute("savedAccessToken") != null) {
             AccessTokenResponse savedAccessToken = (AccessTokenResponse) session.getAttribute("savedAccessToken");
             savedAccessToken.accessToken(accessToken);
+            session.setAttribute("savedAccessToken", savedAccessToken); // 저장필수 : 저장 x -> 원래값 적용
             JsonUtil.writeValue(httpServletResponse.getOutputStream(), savedAccessToken);
         }
 
         if (session.getAttribute("savedRefreshToken") == null) {
-            RefreshTokenResponse savedRefreshTokenNew = new RefreshTokenResponse().refreshToken(refreshToken);
-            session.setAttribute("savedRefreshToken", savedRefreshTokenNew);
+            session.setAttribute("savedRefreshToken", new RefreshTokenResponse().refreshToken(refreshToken));
         } else if (session.getAttribute("savedRefreshToken") != null) {
             RefreshTokenResponse savedRefreshToken = (RefreshTokenResponse) session.getAttribute("savedRefreshToken");
-            if (savedRefreshToken.refreshToken() == null) {
-                savedRefreshToken.refreshToken(refreshToken);
-            }
+            savedRefreshToken.refreshToken(refreshToken);
+            session.setAttribute("savedRefreshToken", savedRefreshToken);
         }
     }
 

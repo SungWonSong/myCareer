@@ -3,8 +3,8 @@ package com.bs.mycareer.Career.controller;
 import com.bs.mycareer.Career.dto.CareerDto;
 
 import com.bs.mycareer.Career.service.CareerService;
-import com.bs.mycareer.exceptions.CustomException;
-import com.bs.mycareer.exceptions.ServerResponse;
+import com.bs.mycareer.Common.exceptions.CustomException;
+import com.bs.mycareer.Common.exceptions.ServerResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 
@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import org.springframework.ui.Model;
-import static com.bs.mycareer.exceptions.ResponseCode.*;
+
+
+import static com.bs.mycareer.Common.exceptions.ResponseCode.*;
 
 // 말 그대로 controller
 @RequiredArgsConstructor

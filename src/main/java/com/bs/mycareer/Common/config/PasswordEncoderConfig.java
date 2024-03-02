@@ -1,4 +1,4 @@
-package com.bs.mycareer.config;
+package com.bs.mycareer.Common.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
