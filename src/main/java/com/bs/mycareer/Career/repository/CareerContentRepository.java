@@ -16,7 +16,5 @@ public interface CareerContentRepository extends JpaRepository<Career, Integer> 
     List<Career> findAllByAvailableTrue(Sort sort); //전체 글 조회
     Optional<Career> findCareerById(Long id); //id 별 글 조회
 
-
-
 }
 

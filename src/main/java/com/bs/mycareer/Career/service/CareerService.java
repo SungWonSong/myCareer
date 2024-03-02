@@ -11,6 +11,7 @@ public interface CareerService {
     //커리어 작성
     Career createCareer(String title, String content, HttpServletRequest httpServletRequest );
 
+    //커리어 아이디별 조회
     CareerDto getCareerById(Long id);
 
     List<CareerDto> getAllCareers();

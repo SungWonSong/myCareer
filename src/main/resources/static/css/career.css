@@ -1,0 +1,104 @@
+* {
+    background-color: beige;
+}
+
+.head {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.head h1 {
+    color: darkgreen;
+}
+#changeContent {
+    display: flex;
+    justify-content: flex-end; /* 내용을 오른쪽 정렬 */
+    align-items: flex-start; /* 내용을 위쪽 정렬 */
+    width: 100%;
+    background-color: aquamarine;
+    padding: 10px; /* 내용과의 간격 조절 */
+    box-sizing: border-box; /* 내용의 크기에 padding, border를 포함시키도록 함 */
+}
+
+#changeContent button {
+    color: olivedrab;
+    text-decoration: none;
+    border: 1.5px solid olivedrab;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    letter-spacing: 0.36px;
+    line-height: 1;
+}
+
+#changeContent > button:hover {
+    border: 2px solid olivedrab;
+    font-weight: 700;
+    color: olivedrab;
+}
+#update {
+    margin-right: 10px;
+}
+/* #delete {
+  position: absolute;
+  top: 48px;
+  right: 50px;
+} */
+
+.head > a {
+    color: olivedrab;
+    text-decoration: none;
+    border: 1.5px solid olivedrab;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    letter-spacing: 0.36px;
+    line-height: 1;
+    margin-top: 10px;
+}
+
+.head > a:hover {
+    border: 2px solid olivedrab;
+    font-weight: 700;
+    color: olivedrab;
+}
+
+.saveCareer {
+    margin: 30px auto 30px auto;
+    width: 95%;
+    max-width: 1200px; /* 최대 너비 지정 */
+
+    height: 70vh;
+    max-width: 1200px;
+    padding: 20px;
+    border: 2px solid olivedrab;
+    border-radius: 15px;
+    position: relative; /* 상대 위치 지정 */
+}
+
+#content-box {
+    list-style: none;
+    padding: 0;
+}
+
+#content-box li h2 {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    margin: 0;
+}
+#content-box li p {
+    /* display: flex; */
+    /* justify-content: space-around;
+    align-items: center; */
+    overflow: auto; /* 내용이 넘치면 스크롤 표시, 넘치지 않으면 표시 안함 */
+    border-bottom: 1px solid #ccc;
+    padding: 10px; /* 내용이 넘치더라도 일정한 패딩 유지 */
+    margin: 0;
+    height: 600px; /* 적절한 높이로 조절 */
+}

@@ -1,0 +1,136 @@
+* {
+    background-color: beige;
+}
+
+.head {
+    width: 100%;
+    height: 250px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.head a {
+    color: olivedrab;
+    text-decoration: none;
+    border: 1.5px solid olivedrab;
+    padding: 10px;
+    border-radius: 15px;
+    text-align: center;
+    letter-spacing: 0.36px;
+    line-height: 1;
+}
+h1 {
+    color: darkgreen;
+}
+
+.head > a:hover {
+    border: 2px solid olivedrab;
+    font-weight: 700;
+    color: olivedrab;
+}
+
+.head > button {
+    width: 200px;
+    height: 50px;
+
+    background-color: transparent;
+    color: olivedrab;
+
+    border-radius: 50px;
+    border: 1.5px solid olivedrab;
+
+    margin-top: 40px;
+}
+
+.head > button:hover {
+    border: 2px solid olivedrab;
+    font-weight: 700;
+    color: olivedrab;
+}
+
+#sign-text {
+    position: absolute;
+    top: 48px;
+    right: 110px;
+    margin-right: 15px;
+}
+#login-text {
+    position: absolute;
+    top: 48px;
+    right: 50px;
+}
+
+.saveCareers {
+    margin: 30px auto 30px auto;
+    width: 95%;
+    height: 70vh;
+    max-width: 1200px;
+    padding: 20px;
+    border: 2px solid olivedrab;
+    border-radius: 15px;
+}
+
+#careerList {
+    list-style: none;
+    padding: 0;
+}
+
+#careerList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #ccc;
+    padding: 10px;
+    margin: 0;
+}
+
+#careerList li:last-child {
+    border-bottom: none;
+}
+#careerList li a {
+    text-decoration: none;
+    color: black;
+}
+
+#careerList li p {
+    margin: 5px 0 0;
+}
+
+.pagination {
+    align-items: center;
+    justify-content: center;
+}
+.pagination .page-link:hover {
+    border: 2px solid olivedrab;
+    color: darkgreen;
+}
+
+/* 페이지네이션 글씨 색상 변경 */
+.pagination .page-link {
+    color: olivedrab; /* 원하는 글씨 색상으로 변경 */
+    border: 2px solid olivedrab;
+    border-radius: 50%;
+}
+
+/* 페이지네이션 바탕색 변경 */
+.pagination .page-item:not(.disabled) .page-link {
+    background-color: beige; /* 원하는 바탕색으로 변경 */
+}
+
+/* 페이지네이션 간격 조절 */
+.pagination .page-item {
+    margin-right: 10px; /* 각 페이지네이션 버튼 간의 우측 마진을 조절합니다. */
+}
+
+/* 마지막 페이지네이션 버튼은 마진을 적용하지 않습니다. */
+.pagination .page-item:last-child {
+    margin-right: 0;
+}
+
+/* 처음과 마지막 페이지네이션 버튼 스타일 조정 */
+.pagination .page-item:first-child .page-link,
+.pagination .page-item:last-child .page-link {
+    border-radius: 50%;
+}

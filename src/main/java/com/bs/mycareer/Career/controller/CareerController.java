@@ -1,23 +1,30 @@
 package com.bs.mycareer.Career.controller;
 
 import com.bs.mycareer.Career.dto.CareerDto;
+
 import com.bs.mycareer.Career.service.CareerService;
 import com.bs.mycareer.Common.exceptions.CustomException;
 import com.bs.mycareer.Common.exceptions.ServerResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+
+import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.ui.Model;
+
 
 import static com.bs.mycareer.Common.exceptions.ResponseCode.*;
 
 // 말 그대로 controller
 @RequiredArgsConstructor
-@RestController
+@Controller
+@RequestMapping("/")
 public class CareerController {
 
     @Autowired
@@ -45,16 +52,34 @@ public class CareerController {
 
 
     //전체 조회
-    @GetMapping("career/ContentLists")
-    public List<CareerDto> getAllCareers() {
-        return careerService.getAllCareers();
+//    @CrossOrigin(origins = "http://localhost:8080")
+//    @GetMapping("/")
+//    @ResponseBody
+//    public List<CareerDto> getAllCareers() {
+//        List<CareerDto> careerDtoList = careerService.getAllCareers();
+//        return careerDtoList;
+//    }
+    @CrossOrigin(origins = "http://localhost:8080")
+    @GetMapping("/")
+    public String getAllCareers(Model model) {
+        List<CareerDto> careerDtoList = careerService.getAllCareers();
+        model.addAttribute("careers", careerDtoList);
+        return "index";  // "index"는 타임리프 템플릿의 파일명입니다.
     }
 
 
     //id별 조회
-    @GetMapping("career/{id}")
-    public CareerDto getCareerById(@PathVariable(name= "id") Long id) {
-        return careerService.getCareerById(id);
+//    @CrossOrigin(origins = "http://localhost:8080")
+//    @GetMapping("/career/{id}")
+//    public CareerDto getCareerById(@PathVariable(name= "id") Long id) {
+//        return careerService.getCareerById(id);
+//    }
+    @CrossOrigin(origins = "http://localhost:8080")
+    @GetMapping("/career/{id}")
+    public String getCareerById(@PathVariable(name = "id") Long id, Model model) {
+        CareerDto careerDto = careerService.getCareerById(id);
+        model.addAttribute("career", careerDto);
+        return "career";  // "career"는 타임리프 템플릿의 파일명입니다.
     }
 
     //커리어 수정

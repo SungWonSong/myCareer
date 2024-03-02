@@ -17,7 +17,7 @@ public class UserValidator{
     // .: 반드시 점(.) 기호가 있어야 합니다.
     // [a-zA-Z]{2,3}$: 이메일의 끝은 알파벳 2개 이상 3개 이하로 끝나야 합니다.
     public static boolean isValidEmail(String email) {
-        return Pattern.matches(EMAIL_PATTERN, email);
+        return email != null && Pattern.matches(EMAIL_PATTERN, email);
     }
     private static final String PASSWORD_PATTERN = "^(?=.*[0-9])(?=.*[a-zA-Z])(?=.*\\W).{7,12}$";
     // 2. 비밀번호 표현식
@@ -27,6 +27,6 @@ public class UserValidator{
     // .{7,12}: 비밀번호의 길이는 7자 이상, 12자 이하여야 함
 
     public static boolean isValidPassword(String password) {
-        return Pattern.matches(PASSWORD_PATTERN, password);
+        return password != null && Pattern.matches(PASSWORD_PATTERN, password);
     }
 }

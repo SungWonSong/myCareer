@@ -8,9 +8,11 @@ import lombok.Setter;
 @Setter
 public class CareerDto {
 
-//    private Long id; 보안상의 이유로 식별자는 전달하지 않는다.
+    private Long id;
     private String title;
     private String content;
+
+    private String user;
     private boolean available;
 
     public CareerDto() {
@@ -27,8 +29,10 @@ public class CareerDto {
 
     // Career 객체를 받는 생성자 추가 -> response할때
     public CareerDto(Career career) {
+        this.id = career.getId();
         this.title = career.getTitle();
         this.content = career.getContent();
+        this.user = String.valueOf(career.getUser().getEmail());
         this.available = career.isAvailable();
     }
 
