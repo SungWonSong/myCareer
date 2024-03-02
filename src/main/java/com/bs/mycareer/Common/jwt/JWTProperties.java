@@ -1,4 +1,4 @@
-package com.bs.mycareer.jwt;
+package com.bs.mycareer.Common.jwt;
 
 import io.jsonwebtoken.Jwts;
 import lombok.Getter;

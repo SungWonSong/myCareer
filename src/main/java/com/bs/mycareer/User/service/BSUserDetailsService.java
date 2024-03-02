@@ -3,13 +3,13 @@ package com.bs.mycareer.User.service;
 import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
-import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.Common.exceptions.CustomException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import static com.bs.mycareer.exceptions.ResponseCode.*;
+import static com.bs.mycareer.Common.exceptions.ResponseCode.*;
 
 @Service
 public class BSUserDetailsService implements UserDetailsService {

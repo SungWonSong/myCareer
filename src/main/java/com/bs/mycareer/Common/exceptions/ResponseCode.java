@@ -1,4 +1,4 @@
-package com.bs.mycareer.exceptions;
+package com.bs.mycareer.Common.exceptions;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -37,6 +37,7 @@ public enum ResponseCode {
 
 
     // 로그인에 실패하는 경우 (비밀번호가 맞지 않는 경우)
+    DUPLICATE_LOGIN(BAD_REQUEST, "중복된 로그인입니다."),
     INVALID_SIGN_IN_EMAIL(BAD_REQUEST, "이메일에 빈 칸을 입력할 수 없습니다."),
     INVALID_SIGN_IN_PASSWORD(BAD_REQUEST, "비밀번호에 빈 칸을 입력할 수 없습니다."),
     INVALID_PASSWORD(BAD_REQUEST, "비밀번호가 맞지 않습니다"),

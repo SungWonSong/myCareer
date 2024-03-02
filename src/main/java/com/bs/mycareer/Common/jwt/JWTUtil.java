@@ -1,4 +1,4 @@
-package com.bs.mycareer.jwt;
+package com.bs.mycareer.Common.jwt;
 
 
 import com.auth0.jwt.JWT;
@@ -7,26 +7,21 @@ import com.auth0.jwt.exceptions.JWTDecodeException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.JWTVerifier;
+import com.bs.mycareer.Common.exceptions.CustomException;
 import com.bs.mycareer.User.dto.AccessTokenResponse;
 import com.bs.mycareer.User.dto.BSUserDetail;
-import io.jsonwebtoken.Claims;
-
-import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.User.dto.RefreshTokenResponse;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
-import static com.bs.mycareer.exceptions.ResponseCode.*;
+import static com.bs.mycareer.Common.exceptions.ResponseCode.INVALID_TOKEN;
 
 
 @Component //jwt 0.12.3 버전 사용 (타 블로그: 0.11.5)
@@ -145,12 +140,10 @@ public class JWTUtil {
         DecodedJWT jwt;
         try {
             jwt = JWT.decode(token);
-            System.out.println("jwt = " + jwt);
         } catch (JWTDecodeException e) {
             throw  new CustomException(INVALID_TOKEN);
         }
         String subject = jwt.getSubject();
-        System.out.println("subject = " + subject);
         return subject != null && subject.trim().equals("ACCESS_TOKEN");
     }
 
@@ -169,34 +162,85 @@ public class JWTUtil {
         return subject != null && subject.trim().equals("REFRESH_TOKEN");
     }
 
+
     public Boolean validateAccessToken(String token) {
-        String accessSecretKey = String.valueOf(jwTproperties.getAccessSecretKey());
-        SecretKey accesssecretKey = new SecretKeySpec(accessSecretKey.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
         try {
-            Claims claims = Jwts.parser().setSigningKey(accesssecretKey).build().parseClaimsJws(token).getBody();
-            return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
+            Algorithm algorithm = Algorithm.HMAC256(jwTproperties.getAccessSecretKey().getEncoded());
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT jwt = verifier.verify(token);
+
+            // 만료일을 확인합니다.
+            Date expiration = jwt.getExpiresAt();
+            if (expiration.before(new Date())) {
+                System.out.println("Token is expired");
+                return false;
+            }
+
+            System.out.println("Token is valid");
+            return true;
+
+        } catch (JWTVerificationException e) {
+            System.out.println("Token validation error = " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
-
 
     public Boolean validateRefreshToken(String token) {
-        String refreshSecretKey = String.valueOf(jwTproperties.getRefreshSecretKey());
-        SecretKey refreshsecretKey = new SecretKeySpec(refreshSecretKey.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
         try {
-            Claims claims = Jwts.parser().setSigningKey(refreshsecretKey).build().parseClaimsJws(token).getBody();
-            return !claims.getExpiration().before(new Date());
-        } catch (Exception e) {
+            Algorithm algorithm = Algorithm.HMAC256(jwTproperties.getRefreshSecretKey().getEncoded());
+            JWTVerifier verifier = JWT.require(algorithm).build();
+            DecodedJWT jwt = verifier.verify(token);
+
+            // 만료일을 확인합니다.
+            Date expiration = jwt.getExpiresAt();
+            if (expiration.before(new Date())) {
+                System.out.println("Token is expired");
+                return false;
+            }
+
+            System.out.println("Token is valid");
+            return true;
+
+        } catch (JWTVerificationException e) {
+            System.out.println("Token validation error = " + e.getMessage());
+            e.printStackTrace();
             return false;
         }
     }
+//public Boolean validateAccessToken(String token) {
+//    String accessSecretKey = String.valueOf(jwTproperties.getAccessSecretKey());
+//    SecretKey accesssecretKey = new SecretKeySpec(accessSecretKey.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());
+//    try {
+//        Claims claims = Jwts.parser().setSigningKey(accesssecretKey).build().parseClaimsJws(token).getBody();
+//        return !claims.getExpiration().before(new Date());
+//    } catch (Exception e) {
+//        return false;
+//    }
+//}
+
+
+
+//    public Boolean validateRefreshToken(String token) {
+//        String refreshSecretKey = String.valueOf(jwTproperties.getRefreshSecretKey());
+//        SecretKey refreshsecretKey = new SecretKeySpec(refreshSecretKey.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
+//        try {
+//            Claims claims = Jwts.parser().setSigningKey(refreshsecretKey).build().parseClaimsJws(token).getBody();
+//            System.out.println("claims = " + claims);
+//            return !claims.getExpiration().before(new Date());
+//
+//        } catch (Exception e) {
+//            System.out.println("e = " + e);
+//            return false;
+//        }
+//    }
 
 
 
     public void destroyAccessToken(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
         HttpSession session = httpServletRequest.getSession(false);
         AccessTokenResponse savedAccessToken = (AccessTokenResponse) httpServletRequest.getSession().getAttribute("savedAccessToken");
+        RefreshTokenResponse savedRefreshToken = (RefreshTokenResponse) httpServletRequest.getSession().getAttribute("savedRefreshToken");
 
         if(savedAccessToken != null){
             savedAccessToken = null;
@@ -204,6 +248,8 @@ public class JWTUtil {
             session.removeAttribute("savedAccessToken");
         }
 
+        System.out.println("savedAccessToken = " + savedAccessToken);
+        System.out.println("savedRefreshToken = " + savedRefreshToken);
         httpServletResponse.sendRedirect(httpServletRequest.getContextPath() + "/login");
 
     }

@@ -1,4 +1,4 @@
-package com.bs.mycareer.jwt;
+package com.bs.mycareer.Common.jwt;
 
 
 import com.bs.mycareer.utils.JsonUtil;
