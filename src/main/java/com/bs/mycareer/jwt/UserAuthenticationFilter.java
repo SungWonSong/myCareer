@@ -48,7 +48,7 @@ public class UserAuthenticationFilter extends UsernamePasswordAuthenticationFilt
 
         HttpSession session = httpServletRequest.getSession();
         AuthenticationRequest authenticationRequest = JsonUtil.readValue(httpServletRequest, AuthenticationRequest.class);
-        
+
         // 밑에 두가지 세션의 attribute된것들은 불러와진다..... 존재 안한다 생각하면 안된다.
         AccessTokenResponse accessTokenResponse = (AccessTokenResponse) session.getAttribute("savedAccessToken");
         RefreshTokenResponse refreshTokenResponse = (RefreshTokenResponse) session.getAttribute("savedRefreshToken");

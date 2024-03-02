@@ -79,7 +79,7 @@ public class SecurityConfig {
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
-        configuration.setAllowedOrigins(List.of("localhost:8080"));
+        configuration.setAllowedOrigins(List.of("https://localhost:8080"));
         configuration.setAllowedMethods(asList("GET", "POST"));
         configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -116,7 +116,7 @@ public class SecurityConfig {
 
                 // authorizeRequests / antmachers 다 현재 스프링 시큐리티에서는 적용안됨... 다 depreiciated됨
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/login","*/*").permitAll()
+                        .requestMatchers("/login","*/*","/", "/error").permitAll()
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/career/**").permitAll()
                         .anyRequest().authenticated()

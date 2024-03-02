@@ -4,10 +4,11 @@ package com.bs.mycareer.User.dto;
 import com.bs.mycareer.User.entity.User;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
+import lombok.Setter;
 
 
 @Getter
+@Setter
 @NoArgsConstructor
 public class RegisterRequest {
 
@@ -21,5 +22,6 @@ public class RegisterRequest {
                 .role("USER")
                 .build();
     }
+
 
 }
