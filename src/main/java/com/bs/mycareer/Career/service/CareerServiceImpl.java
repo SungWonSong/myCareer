@@ -8,9 +8,9 @@ import com.bs.mycareer.User.dto.BSUserDetail;
 import com.bs.mycareer.User.entity.User;
 import com.bs.mycareer.User.repository.UserRepository;
 import com.bs.mycareer.User.service.BSUserDetailsService;
-import com.bs.mycareer.exceptions.CustomException;
-import com.bs.mycareer.jwt.JWTProperties;
-import com.bs.mycareer.jwt.JWTUtil;
+import com.bs.mycareer.Common.exceptions.CustomException;
+import com.bs.mycareer.Common.jwt.JWTProperties;
+import com.bs.mycareer.Common.jwt.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.bs.mycareer.exceptions.ResponseCode.*;
+import static com.bs.mycareer.Common.exceptions.ResponseCode.*;
 
 // 핵심 비지니스 로직 구현
 @Service
@@ -159,7 +159,6 @@ public class CareerServiceImpl implements CareerService {
 
     private User getCurrentUserFromToken(HttpServletRequest httpServletRequest) {
         String token = extractTokenFromHeader(httpServletRequest.getHeader("Authorization"));
-        validateAccessToken(token);
 
         BSUserDetail bsUserDetail = null;
         try {

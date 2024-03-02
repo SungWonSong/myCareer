@@ -2,8 +2,8 @@ package com.bs.mycareer.User.controller;
 
 import com.bs.mycareer.User.dto.RegisterRequest;
 import com.bs.mycareer.User.service.UserService;
-import com.bs.mycareer.exceptions.CustomException;
-import com.bs.mycareer.exceptions.ResponseCode;
+import com.bs.mycareer.Common.exceptions.CustomException;
+import com.bs.mycareer.Common.exceptions.ResponseCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

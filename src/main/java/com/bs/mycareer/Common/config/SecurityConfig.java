@@ -1,10 +1,10 @@
-package com.bs.mycareer.config;
+package com.bs.mycareer.Common.config;
 
 import com.bs.mycareer.User.service.BSUserDetailsService;
-import com.bs.mycareer.jwt.JWTUtil;
-import com.bs.mycareer.jwt.UserAuthenticationFilter;
-import com.bs.mycareer.jwt.UserAuthorizationFilter;
-import com.bs.mycareer.jwt.UserLogoutHandler;
+import com.bs.mycareer.Common.jwt.JWTUtil;
+import com.bs.mycareer.Common.jwt.UserAuthenticationFilter;
+import com.bs.mycareer.Common.jwt.UserAuthorizationFilter;
+import com.bs.mycareer.Common.jwt.UserLogoutHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -116,13 +116,13 @@ public class SecurityConfig {
 
                 // authorizeRequests / antmachers 다 현재 스프링 시큐리티에서는 적용안됨... 다 depreiciated됨
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/login","*/*").permitAll()
+                        .requestMatchers("/login","*/*","/").permitAll()
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/career/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterAt(new UserAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtUtil, bsUserDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(new UserAuthorizationFilter(jwtUtil),UserAuthenticationFilter.class)
+                .addFilterAfter(new UserAuthorizationFilter(jwtUtil),UserAuthenticationFilter.class)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .logout(logoutConfigurer ->
@@ -130,7 +130,7 @@ public class SecurityConfig {
                         .addLogoutHandler(new UserLogoutHandler(jwtUtil))
                         .logoutSuccessHandler(new UserLogoutHandler(jwtUtil))
                         .logoutUrl("/logout")
-                        .invalidateHttpSession(true)
+                        .invalidateHttpSession(false)
                         .permitAll());
         return http.build();
     }

@@ -1,13 +1,13 @@
 package com.bs.mycareer.utils;
 
-import com.bs.mycareer.exceptions.CustomException;
+import com.bs.mycareer.Common.exceptions.CustomException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 
 import java.io.IOException;
 import java.io.OutputStream;
 
-import static com.bs.mycareer.exceptions.ResponseCode.*;
+import static com.bs.mycareer.Common.exceptions.ResponseCode.*;
 
 public class JsonUtil {
 
