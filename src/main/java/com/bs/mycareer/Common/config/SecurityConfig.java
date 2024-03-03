@@ -1,10 +1,10 @@
 package com.bs.mycareer.Common.config;
 
-import com.bs.mycareer.User.service.BSUserDetailsService;
 import com.bs.mycareer.Common.jwt.JWTUtil;
 import com.bs.mycareer.Common.jwt.UserAuthenticationFilter;
 import com.bs.mycareer.Common.jwt.UserAuthorizationFilter;
 import com.bs.mycareer.Common.jwt.UserLogoutHandler;
+import com.bs.mycareer.User.service.BSUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,7 +52,6 @@ public class SecurityConfig {
     private final AuthenticationConfiguration authenticationConfiguration;
 
 
-
     public SecurityConfig(AuthenticationConfiguration authenticationConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.authenticationConfiguration = authenticationConfiguration;
@@ -70,7 +69,7 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
-//    @Bean // 스프링 컨테이너(Spring Container)에 의해 관리되는 메서드로 의미수동으로 해당 어노테이션을 통하여 주입을 합니다.
+    //    @Bean // 스프링 컨테이너(Spring Container)에 의해 관리되는 메서드로 의미수동으로 해당 어노테이션을 통하여 주입을 합니다.
 //    public BCryptPasswordEncoder bCryptPasswordEncoder() {
 //        return new BCryptPasswordEncoder();
 //    }
@@ -105,13 +104,16 @@ public class SecurityConfig {
         return new UserAuthorizationFilter(jwtUtil);
     }
 
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, BSUserDetailsService bsUserDetailsService, JWTUtil jwtUtil) throws Exception {
         //csrf disable -> csrf : 사용자 의지와 무관하게 공격자의 의도대로 서버에 특정 요청을 하도록 함
         //Form 로그인 방식 disable , http basic 인증 방식 disable
         http
                 .csrf(AbstractHttpConfigurer::disable)
-                .formLogin(AbstractHttpConfigurer::disable)
+                .formLogin((formLogin) -> formLogin
+                        .loginPage("/login")
+                        .defaultSuccessUrl("/"))
                 .httpBasic(AbstractHttpConfigurer::disable)
 
                 // authorizeRequests / antmachers 다 현재 스프링 시큐리티에서는 적용안됨... 다 depreiciated됨
@@ -123,16 +125,16 @@ public class SecurityConfig {
                         .anyRequest().authenticated()
                 )
                 .addFilterAt(new UserAuthenticationFilter(authenticationManager(authenticationConfiguration), jwtUtil, bsUserDetailsService), UsernamePasswordAuthenticationFilter.class)
-                .addFilterAfter(new UserAuthorizationFilter(jwtUtil),UserAuthenticationFilter.class)
+                .addFilterAfter(new UserAuthorizationFilter(jwtUtil), UserAuthenticationFilter.class)
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .logout(logoutConfigurer ->
                         logoutConfigurer
-                        .addLogoutHandler(new UserLogoutHandler(jwtUtil))
-                        .logoutSuccessHandler(new UserLogoutHandler(jwtUtil))
-                        .logoutUrl("/logout")
-                        .invalidateHttpSession(false)
-                        .permitAll());
+                                .addLogoutHandler(new UserLogoutHandler(jwtUtil))
+                                .logoutSuccessHandler(new UserLogoutHandler(jwtUtil))
+                                .logoutUrl("/logout")
+                                .invalidateHttpSession(false)
+                                .permitAll());
         return http.build();
     }
 }

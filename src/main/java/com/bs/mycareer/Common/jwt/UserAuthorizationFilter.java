@@ -26,10 +26,13 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
         String requestURI = httpServletRequest.getRequestURI();
 
         // "/register" 요청일 경우 토큰 검증을 건너뜁니다.
-        if ("/register".equals(requestURI) || "/login".equals(requestURI) || "/career/ContentLists".equals(requestURI) || "/".equals(requestURI)) {
+        if ("/register".equals(requestURI) || "/login".equals(requestURI) || "/career/ContentLists".equals(requestURI)
+                || "/".equals(requestURI) || requestURI.startsWith("/css/") || requestURI.startsWith("/js/")
+                || requestURI.startsWith("/images/") || requestURI.matches("^/career/[0-9]+$")) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
+
 
         String token = httpServletRequest.getHeader("Authorization");
 
@@ -41,7 +44,7 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
 
         // validate안하면 로그인페이지로 넘겨줌 - 문제점 : career_id값으로 들어오는 그걸 안거쳐야된다. / 없애는게 맞나 ?
         if (!jwtUtil.validateAccessToken(token)) {
-            jwtUtil.destroyAccessToken(httpServletRequest,httpServletResponse);
+            jwtUtil.destroyAccessToken(httpServletRequest, httpServletResponse);
 
             String loginPage = "/register";
 
