@@ -37,35 +37,5 @@
 <!-- axios CDN -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:src="@{/js/career.js}" type="text/javascript"></script>
-<!--<script>-->
-<!--    document.addEventListener("DOMContentLoaded", function () {-->
-<!--        const careerId = 1;  // 현재는 하드코딩으로 ID를 설정하였습니다. 필요에 따라 동적으로 변경하세요.-->
-
-<!--        // axios를 사용하여 해당 커리어의 상세 정보를 가져오기-->
-<!--        axios-->
-<!--            .get(`http://localhost:8080/career/${careerId}`)-->
-<!--            .then(function (response) {-->
-<!--                // 데이터가 성공적으로 받아와지면 페이지 채우기-->
-<!--                const contentBox = document.getElementById("content-box");-->
-
-<!--                // JSON 데이터를 사용하여 동적으로 페이지 구성-->
-<!--                const careerTitle = document.createElement("h2");-->
-<!--                careerTitle.textContent = response.data.title;-->
-
-<!--                const careerContentDetail = document.createElement("p");-->
-<!--                careerContentDetail.textContent = response.data.content;-->
-
-<!--                // 추가적인 데이터가 있다면 반복해서 처리-->
-
-<!--                // 구성된 엘리먼트를 contentBox에 추가-->
-<!--                contentBox.appendChild(careerTitle);-->
-<!--                contentBox.appendChild(careerContentDetail);-->
-<!--            })-->
-<!--            .catch(function (error) {-->
-<!--                // 데이터를 가져오는 도중에 오류가 발생하면 에러 메시지를 출력-->
-<!--                console.error("Error fetching data:", error);-->
-<!--            });-->
-<!--    });-->
-<!--</script>-->
 </body>
 </html>

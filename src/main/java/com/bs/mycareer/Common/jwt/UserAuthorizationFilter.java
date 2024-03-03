@@ -27,10 +27,13 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
         String requestURI = httpServletRequest.getRequestURI();
 
         // "/register" 요청일 경우 토큰 검증을 건너뜁니다.
-        if ("/register".equals(requestURI) || "/login".equals(requestURI)) {
+        if ("/register".equals(requestURI) || "/login".equals(requestURI) || "/career/ContentLists".equals(requestURI)
+                || "/".equals(requestURI) || requestURI.startsWith("/css/") || requestURI.startsWith("/js/")
+                || requestURI.startsWith("/images/") || requestURI.matches("^/career/[0-9]+$")) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
+
 
         String token = httpServletRequest.getHeader("Authorization");
 
@@ -41,9 +44,9 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
 
         // validate안하면 로그인페이지로 넘겨줌
         if (!jwtUtil.validateAccessToken(token)) {
-            jwtUtil.destroyAccessToken(httpServletRequest,httpServletResponse);
+            jwtUtil.destroyAccessToken(httpServletRequest, httpServletResponse);
 
-            String loginPage = "/login";
+            String loginPage = "/register";
 
             httpServletResponse.setStatus(HttpServletResponse.SC_SEE_OTHER);
             httpServletResponse.setHeader("Location", loginPage);
