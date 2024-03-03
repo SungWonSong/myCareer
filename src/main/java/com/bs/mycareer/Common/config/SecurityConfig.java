@@ -116,7 +116,8 @@ public class SecurityConfig {
 
                 // authorizeRequests / antmachers 다 현재 스프링 시큐리티에서는 적용안됨... 다 depreiciated됨
                 .authorizeHttpRequests(authorizeHttpRequests -> authorizeHttpRequests
-                        .requestMatchers("/login","*/*","/", "/error").permitAll()
+                        .requestMatchers("/css/**", "/js/**", "/images/**").permitAll()  // 이 부분을 추가합니다.
+                        .requestMatchers("/login", "*/*", "/", "/error").permitAll()
                         .requestMatchers("/register").permitAll()
                         .requestMatchers("/career/**").permitAll()
                         .anyRequest().authenticated()
