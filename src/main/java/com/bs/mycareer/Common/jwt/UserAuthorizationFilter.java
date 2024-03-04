@@ -15,7 +15,6 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
     @Autowired
     private final JWTUtil jwtUtil;
 
-
     public UserAuthorizationFilter(JWTUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
     }
@@ -37,12 +36,13 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
 
         String token = httpServletRequest.getHeader("Authorization");
 
+
         if ((token != null) && (jwtUtil.isStartWithPrefix(token))) {
             token = jwtUtil.removePrefix(token);
         }
 
 
-        // validate안하면 로그인페이지로 넘겨줌
+        // validate안하면 로그인페이지로 넘겨줌 - 문제점 : career_id값으로 들어오는 그걸 안거쳐야된다. / 없애는게 맞나 ?
         if (!jwtUtil.validateAccessToken(token)) {
             jwtUtil.destroyAccessToken(httpServletRequest, httpServletResponse);
 
@@ -54,7 +54,7 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
             // 여기서 로그아웃을 시킨다음에 자동으로 로그인페이지로 보내는거야...
 
         } else {
-            httpServletResponse.addHeader("Authorization", "Bearer " + token);
+             httpServletResponse.addHeader("Authorization", "Bearer " + token);
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         }
     }

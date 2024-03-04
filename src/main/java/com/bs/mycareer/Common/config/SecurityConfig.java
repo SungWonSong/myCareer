@@ -1,12 +1,11 @@
 package com.bs.mycareer.Common.config;
 
-import com.bs.mycareer.User.service.BSUserDetailsService;
 import com.bs.mycareer.Common.jwt.JWTUtil;
 import com.bs.mycareer.Common.jwt.UserAuthenticationFilter;
 import com.bs.mycareer.Common.jwt.UserAuthorizationFilter;
 import com.bs.mycareer.Common.jwt.UserLogoutHandler;
+import com.bs.mycareer.User.service.BSUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.servlet.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,7 +15,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
