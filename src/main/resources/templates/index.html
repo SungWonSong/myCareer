@@ -42,7 +42,7 @@
             <!--            </li>-->
             <li th:each="career : ${careers}">
                 <a th:href="@{'/career/' + ${career.id}}" th:text="${career.title}"></a>
-                <p th:text="${career.user.split('@')[0]}"></p>
+                <p th:text="${'작성자: ' + career.user.split('@')[0]}"></p>
             </li>
         </ul>
     </div>
@@ -69,5 +69,8 @@
 <!-- axios CDN -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:src="@{/js/index.js}" type="text/javascript"></script>
+<script>
+
+</script>
 </body>
 </html>
