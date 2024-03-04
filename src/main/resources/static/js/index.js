@@ -15,3 +15,16 @@ function logout() {
             console.error('Logout Failed:', error);
         });
 }
+window.onload = function() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    const logoutButton = document.querySelector('button[onclick="logout()"]');
+    const loginLink = document.getElementById('sign-text');
+
+    if (isLoggedIn) {
+        logoutButton.style.display = 'block';
+        loginLink.style.display = 'none';
+    } else {
+        logoutButton.style.display = 'none';
+        loginLink.style.display = 'block';
+    }
+};
