@@ -26,7 +26,7 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
         String requestURI = httpServletRequest.getRequestURI();
 
         // "/register" 요청일 경우 토큰 검증을 건너뜁니다.
-        if ("/register".equals(requestURI) || "/login".equals(requestURI) || "/career/ContentLists".equals(requestURI)
+        if ("/register".equals(requestURI) || "/login".equals(requestURI) || "/career/ContentLists".equals(requestURI) ||"/career/create".equals(requestURI)
                 || "/".equals(requestURI) || requestURI.startsWith("/css/") || requestURI.startsWith("/js/")
                 || requestURI.startsWith("/images/") || requestURI.matches("^/career/[0-9]+$")) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
