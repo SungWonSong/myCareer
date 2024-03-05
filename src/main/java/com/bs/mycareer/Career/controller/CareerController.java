@@ -26,6 +26,10 @@ public class CareerController {
     @Autowired
     private final CareerService careerService;
 
+    @GetMapping("/career/create")
+    public String getCreateCareers(Model model) {
+        return "create";
+    }
 
     //커리어 작성
     @Transactional

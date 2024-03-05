@@ -24,11 +24,17 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
                                     FilterChain filterChain) throws ServletException, IOException {
 
         String requestURI = httpServletRequest.getRequestURI();
-
-        // "/register" 요청일 경우 토큰 검증을 건너뜁니다.
-        if ("/register".equals(requestURI) || "/login".equals(requestURI) || "/career/ContentLists".equals(requestURI)
-                || "/".equals(requestURI) || requestURI.startsWith("/css/") || requestURI.startsWith("/js/")
-                || requestURI.startsWith("/images/") || requestURI.matches("^/career/[0-9]+$")) {
+        String method = httpServletRequest.getMethod();
+        // get 요청일 경우 토큰 검증을 건너뜁니다.
+        if ((method.equals("GET") && "/career/create".equals(requestURI))
+                || "/register".equals(requestURI)
+                || "/login".equals(requestURI)
+                || "/career/ContentLists".equals(requestURI)
+                || "/".equals(requestURI)
+                || requestURI.startsWith("/css/")
+                || requestURI.startsWith("/js/")
+                || requestURI.startsWith("/images/")
+                || requestURI.matches("^/career/[0-9]+$")) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }
@@ -54,7 +60,7 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
             // 여기서 로그아웃을 시킨다음에 자동으로 로그인페이지로 보내는거야...
 
         } else {
-             httpServletResponse.addHeader("Authorization", "Bearer " + token);
+            httpServletResponse.addHeader("Authorization", "Bearer " + token);
             filterChain.doFilter(httpServletRequest, httpServletResponse);
         }
     }

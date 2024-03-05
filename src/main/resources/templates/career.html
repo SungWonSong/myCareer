@@ -25,9 +25,7 @@
             <li class="careerContent">
                 <h2 id="careerTitle" th:text="${career.title}"></h2>
             </li>
-            <li>
-                <p id="careerContentDetail" th:text="${career.content}"></p>
-            </li>
+            <li id="careerContentDetail" th:utext="${career.content}"></li>
         </ul>
 <!--        <div id="careerComment" class="comments">-->
 <!--            <p>댓글</p>-->
@@ -37,5 +35,22 @@
 <!-- axios CDN -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:src="@{/js/career.js}" type="text/javascript"></script>
+<script>
+//     window.onload = function() {
+//         const loggedInUserId = career.user;
+//         const authorId = document.body.dataset.authorId;
+//
+// // 로그인한 사용자와 글의 작성자가 같은지 확인
+//         if (loggedInUserId === authorId) {
+//             // 수정, 삭제 버튼 표시
+//             document.getElementById('update').style.display = 'block';
+//             document.getElementById('delete').style.display = 'block';
+//         } else {
+//             // 수정, 삭제 버튼 숨기기
+//             document.getElementById('update').style.display = 'none';
+//             document.getElementById('delete').style.display = 'none';
+//         }
+//     }
+</script>
 </body>
 </html>
