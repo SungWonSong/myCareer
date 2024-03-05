@@ -1,0 +1,97 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 800px;
+    background-color: beige;
+}
+
+.all {
+    width: 700px;
+    height: 700px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+
+}
+.subject {
+    display: flex;
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+    color: darkgreen;
+    border-bottom: 10px;
+    border: 10px;
+    font-size: 30px;
+}
+.inputGlass{
+    height: 80px;
+    margin-bottom: 20px;
+}
+.input {
+    width: 700px;
+    height: 100px;
+    resize: none;
+    border-radius: 15px;
+    background-color: beige;
+    border: 1px solid beige;
+    font-size: 22px;
+}
+
+.input::placeholder {
+    font-size: 20px;
+}
+
+.input:focus-visible{
+    outline: none;
+    border: none;
+}
+.note-editable {
+    background-color: beige; /* 원하는 색상으로 변경하세요 */
+}
+.edit-notable {
+    width: 600x;
+    height: 500px;
+}
+.button{
+    text-align: right;
+    height: 50px;
+}
+.buttonUpdate{
+    width: 100px;
+        height: 50px;
+
+        background-color: transparent;
+        color: olivedrab;
+
+        border-radius: 50px;
+        border: 1.5px solid olivedrab;
+
+        margin-top: 10px;
+        margin-right: 10px;
+        float: right;
+
+}
+.buttonCancel{
+    width: 100px;
+        height: 50px;
+
+        background-color: transparent;
+        color: olivedrab;
+
+        border-radius: 50px;
+        border: 1.5px solid olivedrab;
+
+        margin-top: 10px;
+        float: right;
+}
+.buttonUpdate:hover {
+    border: 2px solid olivedrab;
+    font-weight: 700;
+    color: olivedrab;
+}
+.buttonCancel:hover {
+    border: 2px solid olivedrab;
+    font-weight: 700;
+    color: olivedrab;
+}
