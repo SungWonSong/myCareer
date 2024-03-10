@@ -18,9 +18,10 @@
     justify-content: flex-end; /* 내용을 오른쪽 정렬 */
     align-items: flex-start; /* 내용을 위쪽 정렬 */
     width: 100%;
-    background-color: aquamarine;
+
     padding: 10px; /* 내용과의 간격 조절 */
     box-sizing: border-box; /* 내용의 크기에 padding, border를 포함시키도록 함 */
+    margin-left: -20px;
 }
 
 #changeContent button {

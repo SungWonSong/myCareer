@@ -24,3 +24,10 @@ function deleteCareer() {
             });
     }
 }
+
+function goEditCareer() {
+    const careerId = document.getElementById("update").getAttribute("data-career-id");
+
+    //수정 폼으로 이동
+    window.location.href = '/career/'+ careerId +'/update' ;
+}

@@ -82,6 +82,12 @@ public class CareerController {
         return "career";  // "career"는 타임리프 템플릿의 파일명입니다.
     }
 
+    @GetMapping("/career/{id}/update")
+    public String getUpdateCareer(Model model, @PathVariable(name = "id") Long id) {
+        model.addAttribute("updateCareer", id);
+        return "update";
+    }
+
     //커리어 수정
     @PutMapping("/career/{id}")
     public ResponseEntity<ServerResponse> editCareer(@PathVariable(name= "id") Long id, @RequestBody CareerDto careerDto, HttpServletRequest httpServletRequest) {
