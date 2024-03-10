@@ -1,3 +1,5 @@
+
+
 function deleteCareer() {
     // "정말 삭제하시겠습니까?" 확인
     const confirmDelete = confirm("정말 삭제하시겠습니까?");
@@ -21,4 +23,11 @@ function deleteCareer() {
                 window.onload;
             });
     }
+}
+
+function goEditCareer() {
+    const careerId = document.getElementById("update").getAttribute("data-career-id");
+
+    //수정 폼으로 이동
+    window.location.href = '/career/'+ careerId +'/update' ;
 }

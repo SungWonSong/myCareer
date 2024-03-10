@@ -17,7 +17,7 @@
         <a href="/">홈으로 돌아가기</a>
     </div>
     <div id="changeContent">
-        <button type="submit" id="update" onclick="editCareer()">수정</button>
+        <button type="submit" id="update" onclick="goEditCareer()" th:attr="data-career-id=${career.id}">수정</button>
         <button type="button" id="delete" onclick="deleteCareer()" th:attr="data-career-id=${career.id}">삭제</button>
     </div>
     <div class="saveCareer">
@@ -25,9 +25,7 @@
             <li class="careerContent">
                 <h2 id="careerTitle" th:text="${career.title}"></h2>
             </li>
-            <li>
-                <p id="careerContentDetail" th:text="${career.content}"></p>
-            </li>
+            <li id="careerContentDetail" th:utext="${career.content}"></li>
         </ul>
 <!--        <div id="careerComment" class="comments">-->
 <!--            <p>댓글</p>-->
@@ -37,5 +35,6 @@
 <!-- axios CDN -->
 <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 <script th:src="@{/js/career.js}" type="text/javascript"></script>
+
 </body>
 </html>

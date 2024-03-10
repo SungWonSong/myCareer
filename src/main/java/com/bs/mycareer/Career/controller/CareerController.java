@@ -26,6 +26,10 @@ public class CareerController {
     @Autowired
     private final CareerService careerService;
 
+    @GetMapping("/career/create")
+    public String getCreateCareers(Model model) {
+        return "create";
+    }
 
     //커리어 작성
     @Transactional
@@ -76,6 +80,12 @@ public class CareerController {
         CareerDto careerDto = careerService.getCareerById(id);
         model.addAttribute("career", careerDto);
         return "career";  // "career"는 타임리프 템플릿의 파일명입니다.
+    }
+
+    @GetMapping("/career/{id}/update")
+    public String getUpdateCareer(Model model, @PathVariable(name = "id") Long id) {
+        model.addAttribute("updateCareer", id);
+        return "update";
     }
 
     //커리어 수정

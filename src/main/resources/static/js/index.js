@@ -28,3 +28,13 @@ window.onload = function() {
         loginLink.style.display = 'block';
     }
 };
+
+function goCreateCareer() {
+    const isLoggedIn = localStorage.getItem('isLoggedIn');
+    if (!isLoggedIn) {
+        alert('로그인이 필요한 서비스입니다.');
+        window.location.href = '/register';
+    } else {
+        window.location.href = '/career/create';
+    }
+}
