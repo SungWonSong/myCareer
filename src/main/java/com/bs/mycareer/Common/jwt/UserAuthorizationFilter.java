@@ -35,9 +35,10 @@ public class UserAuthorizationFilter extends OncePerRequestFilter {
                 || requestURI.startsWith("/js/")
                 || requestURI.startsWith("/images/")
                 || (method.equals("GET") && requestURI.matches("^/career/[0-9]+$"))
-                || (method.equals("GET") && requestURI.matches("^/career/[0-9]+/update$"))
-                || (method.equals("PUT") && requestURI.matches("^/career/[0-9]+$"))
-                || (method.equals("PUT") && requestURI.matches("^/career/[0-9]+/update$"))) {
+//                || (method.equals("GET") && requestURI.matches("^/career/[0-9]+/update$"))
+//                || (method.equals("PUT") && requestURI.matches("^/career/[0-9]+$"))
+//                || (method.equals("PUT") && requestURI.matches("^/career/[0-9]+/update$"))
+                ) {
             filterChain.doFilter(httpServletRequest, httpServletResponse);
             return;
         }

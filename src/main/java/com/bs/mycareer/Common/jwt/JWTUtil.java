@@ -208,6 +208,7 @@ public class JWTUtil {
             return false;
         }
     }
+
 //public Boolean validateAccessToken(String token) {
 //    String accessSecretKey = String.valueOf(jwTproperties.getAccessSecretKey());
 //    SecretKey accesssecretKey = new SecretKeySpec(accessSecretKey.getBytes(StandardCharsets.UTF_8), Jwts.SIG.HS256.key().build().getAlgorithm());

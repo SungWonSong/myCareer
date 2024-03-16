@@ -19,7 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
 
-
     @JsonManagedReference
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Career> careers = new ArrayList<>();
